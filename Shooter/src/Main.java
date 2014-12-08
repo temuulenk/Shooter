@@ -34,7 +34,7 @@ public class Main extends StateBasedGame {
 	
 	public static void main(String[] args){
 		
-		System.out.println("Hello World");
+		System.out.println("This is the changed version..");
 		
 		Thread main_thread = new Thread(new Window());
 		main_thread.start();
