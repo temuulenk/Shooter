@@ -1,3 +1,4 @@
+package Main;
 import static org.lwjgl.opengl.GL11.glTranslatef;
 
 import org.newdawn.slick.Animation;
@@ -89,8 +90,8 @@ public class Play extends BasicGameState {
 //		g.setBackground(new Color(220, 220, 220));
 //		g.setBackground(Color.black);
 //		g.setBackground(Color.decode("#080925"));
-		g.setBackground(Color.white);
 		gc.setAlwaysRender(true);
+		g.setBackground(Color.white);
 		
 		Input input = gc.getInput();
 		int mx = input.getMouseX();
@@ -109,7 +110,7 @@ public class Play extends BasicGameState {
 //	    
 //	    tilemap.draw(g, gc, input);
 //	    player.draw(g, gc, input, font);
-//		gun.logic(g, gc, input);
+		gun.logic(g, gc, input);
 		
 //		client_handler.draw(g, gc, input, font);
 //		
@@ -136,7 +137,7 @@ public class Play extends BasicGameState {
 		
 		
 		
-		chat.draw(g, gc);
+//		chat.draw(g, gc);
 		
 		
 		
@@ -156,8 +157,8 @@ public class Play extends BasicGameState {
 //		displayFPS(font, gc.getFPS());
 		
 		
-		player.healthbar(g, font);
-		client_handler.names(font, input);
+//		player.healthbar(g, font);
+//		client_handler.names(font, input);
 		
 		
 		

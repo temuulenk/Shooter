@@ -1,4 +1,6 @@
+package Main;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -7,7 +9,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
-import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Rectangle;
 
 
@@ -34,6 +35,9 @@ public class Gun {
 	
 	public static ArrayList<Bullet> bullets = new ArrayList<Bullet>(0);
 	
+	Random rand = new Random();
+	
+	int count = 0;
 
 	public Gun() throws SlickException {
 		
@@ -85,12 +89,16 @@ public class Gun {
 		
 
 			
-			
 		
-		if(input.isMousePressed(0)){
+		if(input.isMouseButtonDown(0) && count > 5){
 			shot = true;
 			shoot(g, theta, mx, my);
+			count = 0;
+			
 		}
+		
+		count ++;
+		
 		
 		if(Player.facing_right){
 		}
@@ -108,8 +116,8 @@ public class Gun {
 		g.draw(box);
 		
 		
-		Line line = new Line(startX, startY, mx, my);
-		g.draw(line);
+//		Line line = new Line(startX, startY, mx, my);
+//		g.draw(line);
 		
 		
 		drawBullets(g);
@@ -124,12 +132,14 @@ public class Gun {
 			theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
 			float startX = x;
 			float startY = y + gun_right.getHeight()/2;
+			int mid = (int) startY;
+			int re = rand.nextInt(10) - 5;
 			float endX   = (float) (startX + 20 * Math.sin(theta));
 			float endY   = (float) (startY + 20 * -Math.cos(theta));
-	
+			System.out.println(re);
 			
 			if(right){
-				bullets.add(new Bullet(bullet_image, endX, endY - (bullet_image.getHeight()), toX, toY, 5));
+				bullets.add(new Bullet(bullet_image, endX, endY - (bullet_image.getHeight()), toX, toY + re, 5));
 				String bullet_str = "" + endX + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
 				if(Play.inMultiplayer)
 					Client.send("bullet:" + bullet_str);
