@@ -74,10 +74,10 @@ public class Menu extends BasicGameState{
     		awtFont = awtFont.deriveFont(20f);
     		font = new TrueTypeFont(awtFont, false);
     		
-    		InputStream inputStream1 = ResourceLoader.getResourceAsStream("lib/res/Fonts/FreePixel.ttf");
+    		InputStream inputStream1 = ResourceLoader.getResourceAsStream("lib/res/Fonts/RA1.ttf");
     		Font awtFont1 = Font.createFont(Font.TRUETYPE_FONT, inputStream1);
-    		awtFont1 = awtFont1.deriveFont(22f);
-    		font1 = new TrueTypeFont(awtFont1, true);
+    		awtFont1 = awtFont1.deriveFont(20f);
+    		font1 = new TrueTypeFont(awtFont1, false);
     		
     	} catch (Exception e) {
     		e.printStackTrace();

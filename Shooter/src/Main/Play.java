@@ -32,6 +32,7 @@ public class Play extends BasicGameState {
 	public static Gun gun;
 	public static ClientHandler client_handler;
 	public static Chat chat;
+	public static Shop shop;
 	
 	
 	public static int translate_x;
@@ -71,6 +72,7 @@ public class Play extends BasicGameState {
 		gun = new Gun();
 		client_handler = new ClientHandler();
 		chat = new Chat(font);
+		shop = new Shop(font);
 		
 		
     	p = new SpriteSheet("lib/res/Misc/p.png", 16, 30);
@@ -91,7 +93,7 @@ public class Play extends BasicGameState {
 //		g.setBackground(Color.black);
 //		g.setBackground(Color.decode("#080925"));
 		gc.setAlwaysRender(true);
-		g.setBackground(Color.white);
+		g.setBackground(Color.decode("#0D0923"));
 		
 		Input input = gc.getInput();
 		int mx = input.getMouseX();
@@ -110,7 +112,17 @@ public class Play extends BasicGameState {
 //	    
 //	    tilemap.draw(g, gc, input);
 //	    player.draw(g, gc, input, font);
-		gun.logic(g, gc, input);
+//		gun.logic(g, gc, input);
+		
+		shop.draw(g, gc);
+		
+		
+		
+		
+		
+		
+//		font.drawString(100, 100, "Bought", Color.black);
+//		font1.drawString(100, 120, "Bought", Color.black);
 		
 //		client_handler.draw(g, gc, input, font);
 //		

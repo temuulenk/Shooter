@@ -35,7 +35,6 @@ public class Main extends StateBasedGame {
 	
 	public static void main(String[] args){
 		
-		System.out.println("PC Version..");
 		
 		Thread main_thread = new Thread(new Window());
 		main_thread.start();
