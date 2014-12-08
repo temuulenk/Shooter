@@ -68,9 +68,9 @@ public class Menu extends BasicGameState{
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
     	try {
-    		InputStream inputStream	= ResourceLoader.getResourceAsStream("lib/res/Fonts/Minecraftia-Regular.ttf");
+    		InputStream inputStream	= ResourceLoader.getResourceAsStream("lib/res/Fonts/visitor2.ttf");
     		Font awtFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-    		awtFont = awtFont.deriveFont(12f);
+    		awtFont = awtFont.deriveFont(20f);
     		font = new TrueTypeFont(awtFont, false);
     		
     		InputStream inputStream1 = ResourceLoader.getResourceAsStream("lib/res/Fonts/FreePixel.ttf");

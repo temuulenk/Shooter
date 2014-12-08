@@ -30,6 +30,7 @@ public class Play extends BasicGameState {
 	public static Player player;
 	public static Gun gun;
 	public static ClientHandler client_handler;
+	public static Chat chat;
 	
 	
 	public static int translate_x;
@@ -68,6 +69,7 @@ public class Play extends BasicGameState {
 		player = new Player(tilemap);
 		gun = new Gun();
 		client_handler = new ClientHandler();
+		chat = new Chat(font);
 		
 		
     	p = new SpriteSheet("lib/res/Misc/p.png", 16, 30);
@@ -105,36 +107,36 @@ public class Play extends BasicGameState {
 //		
 //		glTranslatef(translate_x, translate_y, 0);
 //	    
-	    tilemap.draw(g, gc, input);
-	    player.draw(g, gc, input, font);
+//	    tilemap.draw(g, gc, input);
+//	    player.draw(g, gc, input, font);
 //		gun.logic(g, gc, input);
 		
-		client_handler.draw(g, gc, input, font);
+//		client_handler.draw(g, gc, input, font);
+//		
+//		
+//		
+//		float xDistance = (mx) - 201;
+//		float yDistance = 476 - (my);
+//		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
+//		m16.draw(201, 476);
+//		m16.setCenterOfRotation(7, m16.getHeight()/2);
+//		m16.setRotation(theta - 90);
+//		
+//		
+//		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
+//		float startX = 201;
+//		float startY = 476 + 13/2;
+//		float endX   = (float) (startX + 20 * Math.sin(theta));
+//		float endY   = (float) (startY + 20 * -Math.cos(theta));
+//		
+//		g.setColor(new Color(255, 0, 0, .5f));
+//		
+//		Line line = new Line(endX + 7, endY - 1, mx, my);
+//		g.draw(line);
 		
 		
 		
-		float xDistance = (mx) - 201;
-		float yDistance = 476 - (my);
-		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-		m16.draw(201, 476);
-		m16.setCenterOfRotation(7, m16.getHeight()/2);
-		m16.setRotation(theta - 90);
-		
-		
-		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-		float startX = 201;
-		float startY = 476 + 13/2;
-		float endX   = (float) (startX + 20 * Math.sin(theta));
-		float endY   = (float) (startY + 20 * -Math.cos(theta));
-		
-		g.setColor(new Color(255, 0, 0, .5f));
-		
-		Line line = new Line(endX + 7, endY - 1, mx, my);
-		g.draw(line);
-		
-		
-		
-		
+		chat.draw(g, gc);
 		
 		
 		
