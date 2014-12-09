@@ -33,6 +33,10 @@ public class Player {
 	public static boolean facing_right;
 	public static boolean facing_left;
 	
+	
+	public static boolean right;
+	public static boolean left;
+	
 	private float moveSpeed;
 	private float maxSpeed;
 	private float stopSpeed;
@@ -45,7 +49,7 @@ public class Player {
 	private boolean bottomRight;
 	private boolean bottomLeft;
 	
-	private boolean moving;
+	public static boolean moving;
 	
 	public static int max_health = 5;
 	public static int health = max_health;
@@ -76,11 +80,15 @@ public class Player {
 	public static Animation hero_right;
 	public static Animation hero_left;
 	
+	public static SpriteSheet fallingSS;
+	public static Animation fallingA;
+	
 	public static float centerX;
 	public static float centerY;
 
 	
 	public static double angleToTurn;
+	public static boolean jumped;
 	
 	Image jump;
 	
@@ -92,16 +100,18 @@ public class Player {
 		height = 32;
 		
 		moveSpeed = 1.6f;
-		maxSpeed = 2.4f;
+		maxSpeed = 3f;
 		maxFallingSpeed = 5f;
 		stopSpeed = 0.60f;
 		jumpStart = -6.2f;
 		gravity = 0.44f;
 		
-		hero_rightSS = new SpriteSheet("lib/res/Player/right.png", 16, 30);
-		hero_leftSS = new SpriteSheet("lib/res/Player/left.png", 16, 30);
-		hero_right = new Animation(hero_rightSS, 400);
-		hero_left = new Animation(hero_leftSS, 400);
+		hero_rightSS = new SpriteSheet("lib/res/Player/right.png", 16, 34);
+		hero_leftSS = new SpriteSheet("lib/res/Player/left.png", 16, 34);
+		hero_right = new Animation(hero_rightSS, 150);
+		hero_left = new Animation(hero_leftSS, 150);
+		fallingSS = new SpriteSheet("lib/res/Player/falling.png", 16, 34);
+		fallingA = new Animation(fallingSS, 400);
 		
 		jump = new Image("lib/res/Player/left_jump.png");
 		
@@ -168,7 +178,7 @@ public class Player {
 			}
 		}
 		
-		// determining jumping and falling movement
+//		 determining jumping and falling movement
 		if(jumping){
 			dy = jumpStart;
 			falling = true;
@@ -181,8 +191,9 @@ public class Player {
 				dy = maxFallingSpeed;
 			}
 		}else{
-			if(!usingJetpack)
+			if(!usingJetpack){
 				dy = 0;
+			}
 		}
 		
 		
@@ -255,8 +266,6 @@ public class Player {
 	
 	public void handler(GameContainer gc, Input input){
 		
-		
-		
 		if(facing_right) facing_left = false;
 		
 		if(health > 0){
@@ -270,15 +279,16 @@ public class Player {
 			
 			
 			if(input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)){
-//				facing_right = true;
+				left = false;
+				right = true;
 				setRight(true);
 			}else{
 				setRight(false);
 			}
 			
 			if(input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)){
-//				facing_right = false;
-//				facing_left = true;
+				right = false;
+				right = true;
 				setLeft(true);
 			}else{
 				setLeft(false);
@@ -287,11 +297,11 @@ public class Player {
 			if(input.isKeyPressed(Input.KEY_W) || input.isKeyPressed(Input.KEY_UP) || input.isKeyPressed(Input.KEY_SPACE)){
 				if(!usingJetpack)
 					setJumping(true);
-		
 			}
 			
 			if((input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_UP) || input.isKeyDown(Input.KEY_SPACE)) && usingJetpack){
-				flying = true;
+//				flying = true;
+				jumping = true;
 				if(dy > -3.5f)
 					dy -= .65f;
 				else
@@ -309,6 +319,10 @@ public class Player {
 	public void draw(Graphics g, GameContainer gc, Input input, TrueTypeFont font){
 		
 		centerX = getX() + hero_rightSS.getSubImage(0, 0).getWidth() / 2;
+		
+		if(dy < 0) jumped = true;
+		else jumped = false;
+		
 		
 		if(!dead){
 			TileMap.mapX = getX();
@@ -379,44 +393,70 @@ public class Player {
 			}
 		}
 		
-		if(health > 0){
 		
-			if(usingJetpack && flying){
-				int green = random.nextInt(100 - 0) + 0;
-				int size = random.nextInt(12 - 3) + 3;
-				if(facing_right)
-					circles.add(new Circles(getX(), getY() + 13, green, size));
-				else
-					circles.add(new Circles(getX() + (width - 4), getY() + 13,green, size));
-			}
+		if(health > 0){
 			
-			
-			
-			if(!jumping){
-				
-				if((flying || falling) && facing_right && !falling){
-//					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
+			if(jumped){
+				if(facing_left){
+					jump.draw(getX(), getY());
+				}else if(facing_right){
 					jump.getFlippedCopy(true, false).draw(getX(), getY());
 				}
-				else if((flying || falling) && facing_left && !falling){
-//					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
-					jump.draw(getX(), getY());
+			}
+			
+			if(!jumped){
+				if(!moving && facing_right){
+					hero_rightSS.getSubImage(0, 0).draw(getX(), getY() - 2);
+				}else if(!moving && facing_left){
+					hero_leftSS.getSubImage(0, 0).draw(getX(), getY() - 2);
 				}
 				
-				else if(facing_right && !moving || falling){
-					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
-				}
-				else if(facing_left && !moving || falling){
-					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
+				if(moving && facing_right){
+					hero_right.draw(getX(), getY() - 2);
 				}
 				
-				else if(facing_right && moving){
-					hero_right.draw(getX(), getY());
-				}
-				else if(facing_left && moving){
-					hero_left.draw(getX(), getY());
+				else if(moving && facing_left){
+					hero_left.draw(getX(), getY() - 2);
 				}
 			}
+			
+			
+//			if(usingJetpack && flying){
+//				int green = random.nextInt(100 - 0) + 0;
+//				int size = random.nextInt(12 - 3) + 3;
+//				if(facing_right)
+//					circles.add(new Circles(getX(), getY() + 13, green, size));
+//				else
+//					circles.add(new Circles(getX() + (width - 4), getY() + 13,green, size));
+//			}
+//			
+//			
+//			
+//			if(!jumping){
+//				
+//				if((flying || falling) && facing_right && !falling){
+////					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
+//					jump.getFlippedCopy(true, false).draw(getX(), getY());
+//				}
+//				else if((flying || falling) && facing_left && !falling){
+////					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
+//					jump.draw(getX(), getY());
+//				}
+//				
+//				else if(facing_right && !moving || falling){
+//					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
+//				}
+//				else if(facing_left && !moving || falling){
+//					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
+//				}
+//				
+//				else if(facing_right && moving){
+//					hero_right.draw(getX(), getY());
+//				}
+//				else if(facing_left && moving){
+//					hero_left.draw(getX(), getY());
+//				}
+//			}
 		}
 			
 //		font.drawString(100,100, "" + dy);

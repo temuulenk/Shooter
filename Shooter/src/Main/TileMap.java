@@ -10,13 +10,13 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URL;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.geom.Rectangle;
 
 
 
@@ -109,6 +109,7 @@ public class TileMap {
 	
 	public void draw(Graphics g, GameContainer gc, Input input) {
 		
+		g.setColor(Color.decode("#0D0923"));
 		
 		for(int row = 0; row < mapHeight; row++) {
 			for(int col = 0; col < mapWidth; col++) {
@@ -119,11 +120,14 @@ public class TileMap {
 						  && (Math.abs((int) mapY - (row*tileSize)) < (544 / 2) + 40);	
 				
 				if(rc.equals("w")){
+					g.fillRect(col * 32, row * 32, 32, 32);
 //					if(inBound)
 //						background.draw(col * 32, row * 32);
+				}else if(rc.equals("a")){
+					Play.wall.draw(col * 32, row * 32);
 				}
 				
-				blocks(g, "w", row, col, wall);
+//				blocks(g, "w", row, col, wall);
 
 				
 				

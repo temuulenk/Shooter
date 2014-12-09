@@ -1,6 +1,4 @@
 package Main;
-import static org.lwjgl.opengl.GL11.glTranslatef;
-
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -10,7 +8,6 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -62,6 +59,9 @@ public class Play extends BasicGameState {
 	
 	float laserX = 201, laserY = 476;
 	
+	public static Image wall;
+	public static Image background;
+	
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		font = Menu.font;
@@ -85,6 +85,9 @@ public class Play extends BasicGameState {
     	health1 = new Image("lib/res/Misc/health_scale.png");
 		
     	
+    	wall = new Image("lib/res/Misc/wall.png");
+    	background = new Image("lib/res/Misc/background.png");
+    	
     	
 	}
 
@@ -96,8 +99,8 @@ public class Play extends BasicGameState {
 		g.setBackground(Color.decode("#0D0923"));
 		
 		Input input = gc.getInput();
-		int mx = input.getMouseX();
-		int my = input.getMouseY();
+//		int mx = input.getMouseX();
+//		int my = input.getMouseY();
 		
 		
 		if(input.isKeyPressed(Input.KEY_BACK)){
@@ -110,15 +113,11 @@ public class Play extends BasicGameState {
 //		
 //		glTranslatef(translate_x, translate_y, 0);
 //	    
-//	    tilemap.draw(g, gc, input);
-//	    player.draw(g, gc, input, font);
-//		gun.logic(g, gc, input);
+	    tilemap.draw(g, gc, input);
+	    player.draw(g, gc, input, font);
+		gun.logic(g, gc, input);
 		
 		shop.draw(g, gc);
-		
-		
-		
-		
 		
 		
 //		font.drawString(100, 100, "Bought", Color.black);
@@ -261,7 +260,6 @@ public class Play extends BasicGameState {
 		Player.hero_right.update(delta);
 		
 		
-		pp.update(delta);
 		
 	}
 

@@ -15,7 +15,7 @@ public class Bullet {
 	float y;
 	float dx;
 	float dy;
-	float speed = 100;
+	float speed = 20;
 	float theta;
 	public static Image bullet;
 	Rectangle rect;
@@ -53,19 +53,21 @@ public class Bullet {
 	
 	public void logic(){
 		
-		x += dx;
-		y += dy;
+//		if(TileMap.map[(int)y/32][(int)x/32].equals("w")){
+//			x += dx;
+//			y += dy;
+//		}
 		
 		try{
-//			if(dx > 0){
-//				if(TileMap.map[(int) (y + 6)/32][(int) (x + 6)/32].equals("a")){
-//					hit = true;
-//				}
-//			}else{
-//				if(TileMap.map[(int) y/32][(int) (x)/32].equals("a")){
-//					hit = true;
-//				}
-//			}
+			if(dx > 0){
+				if(TileMap.map[(int) (y + 6)/32][(int) (x + 6)/32].equals("a")){
+					hit = true;
+				}
+			}else{
+				if(TileMap.map[(int) y/32][(int) (x)/32].equals("a")){
+					hit = true;
+				}
+			}
 			
 			if(Math.abs(Play.player.getX() - x) > 1000 || Math.abs(Play.player.getY() - y) > 1000) hit = true;
 			
@@ -74,12 +76,17 @@ public class Bullet {
 		}
 		
 		
+		x += dx;
+		y += dy;
+		
+		
 	}
 	
 	public void draw(Graphics g){
 		
-		g.setColor(new Color(0, 0, 0, .3f));
-		g.setLineWidth(.5f);
+		g.setColor(new Color(255, 255, 255, .1f));
+//		g.setColor(new Color(255, 255, 255));
+		g.setLineWidth(.3f);
 		logic();
 		
 		try{

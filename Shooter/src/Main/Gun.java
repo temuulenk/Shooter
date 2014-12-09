@@ -9,6 +9,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
+import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Rectangle;
 
 
@@ -33,6 +34,8 @@ public class Gun {
 	
 	public static float theta;
 	
+	Sound mp5;
+	
 	public static ArrayList<Bullet> bullets = new ArrayList<Bullet>(0);
 	
 	Random rand = new Random();
@@ -46,6 +49,8 @@ public class Gun {
 		bullet_image = new Image("lib/res/Misc/normal_bullet.png");
 		
 		laser_sound = new Sound("lib/res/Sounds/laser_sound.wav");
+		
+		mp5 = new Sound("lib/res/Sounds/machine_gun.wav");
 		
 	}
 	
@@ -70,7 +75,10 @@ public class Gun {
 		
 		if(Player.facing_right){
 			x = Player.centerX - 5;
-			y = Play.player.getY() + 6;
+			if(Player.moving && (Player.hero_right.getFrame() == 2 || Player.hero_right.getFrame() == 3 || Player.hero_right.getFrame() == 7 || Player.hero_right.getFrame() == 8)){
+				y = Play.player.getY() + 4;
+			}else
+				y = Play.player.getY() + 6;
 			gun_right.setCenterOfRotation(8, gun_right.getHeight()/2);
 			gun_right.draw(x, y);
 			gun_right.setRotation(theta - 90);
@@ -78,9 +86,15 @@ public class Gun {
 			
 		}
 		
+		
 		else if(Player.facing_left){
 			x = Play.player.getX();
 			y = Play.player.getY() + 6;
+			
+			if(Player.moving && (Player.hero_left.getFrame() == 2 || Player.hero_left.getFrame() == 3 || Player.hero_left.getFrame() == 7 || Player.hero_left.getFrame() == 8)){
+				y = Play.player.getY() + 4;
+			}else
+				y = Play.player.getY() + 6;
 			
 			gun_left.setCenterOfRotation(gun_left.getWidth() - 8, gun_right.getHeight()/2);
 			gun_left.draw(x - gun_left.getWidth()/2 - 1, y);
@@ -94,7 +108,6 @@ public class Gun {
 			shot = true;
 			shoot(g, theta, mx, my);
 			count = 0;
-			
 		}
 		
 		count ++;
@@ -112,17 +125,13 @@ public class Gun {
 		float endX   = (float) (startX + (16/2) * Math.sin(theta));
 		float endY   = (float) (startY + 15 * -Math.cos(theta));
 		
-		Rectangle box = new Rectangle(startX, startY, 4, 4);
-		g.draw(box);
 		
-		
-//		Line line = new Line(startX, startY, mx, my);
+		Line line = new Line(endX, endY, mx, my);
 //		g.draw(line);
 		
 		
 		drawBullets(g);
 
-		
 		
 	}
 	
@@ -132,25 +141,25 @@ public class Gun {
 			theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
 			float startX = x;
 			float startY = y + gun_right.getHeight()/2;
-			int mid = (int) startY;
-			int re = rand.nextInt(10) - 5;
+//			int mid = (int) startY;
+			int re = rand.nextInt(15) - 5;
 			float endX   = (float) (startX + 20 * Math.sin(theta));
 			float endY   = (float) (startY + 20 * -Math.cos(theta));
-			System.out.println(re);
 			
-			if(right){
-				bullets.add(new Bullet(bullet_image, endX, endY - (bullet_image.getHeight()), toX, toY + re, 5));
+			if(Player.facing_right){
+				bullets.add(new Bullet(bullet_image, endX + 10, endY - (bullet_image.getHeight()), toX, toY + re, 5));
 				String bullet_str = "" + endX + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
 				if(Play.inMultiplayer)
 					Client.send("bullet:" + bullet_str);
 			}else{
-				bullets.add(new Bullet(bullet_image, endX + 15, endY - (bullet_image.getHeight()), toX, toY, 5));
+				bullets.add(new Bullet(bullet_image, endX + 5, endY - (bullet_image.getHeight()), toX, toY + re, 5));
 				String bullet_str = "" + (endX + 15) + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
 				if(Play.inMultiplayer)
 					Client.send("bullet:" + bullet_str);
 			}
 			
-			laser_sound.play(1, .4f);
+//			laser_sound.play(1, .4f);
+			mp5.play(.5f, .3f);
 			shot = false;
 			
 			// TODO: Send to server and Barrel Explosion..

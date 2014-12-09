@@ -10,6 +10,7 @@ public abstract class Weapons {
 	public abstract Image icon();
 	
 	public abstract String name();
+	public abstract int price();
 	public abstract float getX();
 	public abstract float getY();
 	public abstract void setX(int i);

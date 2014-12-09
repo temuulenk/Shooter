@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.lwjgl.input.Mouse;
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -16,9 +15,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
-import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
-import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -52,18 +49,19 @@ public class Menu extends BasicGameState{
 	
 	private int selected;
 	private int last_selected;
-	private Sound click;
+	public static Sound click;
 	
 	private boolean playstate;
-	private int current_state = -1;
+//	private int current_state = -1;
 	
 	public static boolean mute;
-	private Image mute_icon;
+//	private Image mute_icon;
 	
-	SpriteSheet p;
-	Animation pp;
+	public static Image M16;
 	
-	Image m16;
+	public static Image Pistol;
+	
+	public static Image Shotgun;
 	
 	
 
@@ -83,14 +81,14 @@ public class Menu extends BasicGameState{
     		e.printStackTrace();
     	}
     	
-    	mute_icon = new Image("lib/res/Menu/MusicNote.png");
+//    	mute_icon = new Image("lib/res/Menu/MusicNote.png");
     	click = new Sound("lib/res/Sounds/click.wav");
     	gc.setMouseCursor(new Image("lib/res/misc/mouse.png"), 0, 0);
     	
-    	p = new SpriteSheet("lib/res/Player/right.png", 16, 34);
-    	pp = new Animation(p, 150);
+    	M16 = new Image("lib/res/Guns/m16.png");
+    	Pistol = new Image("lib/res/Guns/pistol.png");
+    	Shotgun = new Image("lib/res/Shop/Shotgun_icon.png"); // TODO Change to actual gun, not icon
     	
-    	m16 = new Image("lib/res/misc/m16.png");
     	
 	}
 
@@ -100,12 +98,12 @@ public class Menu extends BasicGameState{
 		
 		if(playstate) sbg.enterState(2);
 		
-		Input input = gc.getInput();
+//		Input input = gc.getInput();
 		
-		int mx = input.getMouseX();
-		int my = input.getMouseY();
+//		int mx = input.getMouseX();
+//		int my = input.getMouseY();
 		
-		Rectangle mouse = new Rectangle(mx, my, 1, 1);
+//		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
 //		if(input.isKeyPressed(Input.KEY_BACK)) current_state = -1;
 //		
@@ -130,24 +128,24 @@ public class Menu extends BasicGameState{
 //		g.draw(line);
 		
 		
-		float xDistance = (mx) - 201;
-		float yDistance = 216 - (my);
-		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-		m16.draw(201, 216);
-		m16.setCenterOfRotation(7, m16.getHeight()/2);
-		m16.setRotation(theta - 90);
-		
-		
-		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-		float startX = 201;
-		float startY = 216 + 13/2;
-		float endX   = (float) (startX + 20 * Math.sin(theta));
-		float endY   = (float) (startY + 20 * -Math.cos(theta));
-		
-		g.setColor(new Color(255, 0, 0, .5f));
-		
-		Line line = new Line(endX + 7, endY - 1, mx, my);
-		g.draw(line);
+//		float xDistance = (mx) - 201;
+//		float yDistance = 216 - (my);
+//		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
+//		m16.draw(201, 216);
+//		m16.setCenterOfRotation(7, m16.getHeight()/2);
+//		m16.setRotation(theta - 90);
+//		
+//		
+//		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
+//		float startX = 201;
+//		float startY = 216 + 13/2;
+//		float endX   = (float) (startX + 20 * Math.sin(theta));
+//		float endY   = (float) (startY + 20 * -Math.cos(theta));
+//		
+//		g.setColor(new Color(255, 0, 0, .5f));
+//		
+//		Line line = new Line(endX + 7, endY - 1, mx, my);
+//		g.draw(line);
 		
 		
 		
@@ -185,7 +183,7 @@ public class Menu extends BasicGameState{
 			client.start();
 			sbg.enterState(2);
 		}else if(i == 2){
-			current_state = i;
+//			current_state = i;
 		}else if(i == 3){
 			sbg.enterState(3);
 			Editor.chose_map = false;
@@ -331,7 +329,6 @@ public class Menu extends BasicGameState{
 	
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		pp.update(delta);
 	}
 
 	

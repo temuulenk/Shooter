@@ -1,5 +1,7 @@
 package Main;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -8,6 +10,11 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
+
+import Weapons.M16;
+import Weapons.Pistol;
+import Weapons.Shotgun;
+import Weapons.Weapons;
 
 public class Shop {
 	TrueTypeFont font;
@@ -19,7 +26,11 @@ public class Shop {
 	Image closeHover;
 	Image xHover;
 	Image buyHover;
+	Image toolbar;
 	
+	Image M16_icon;
+	Image Pistol_icon;
+	Image Shotgun_icon;
 	
 	float x;
 	float y;
@@ -28,11 +39,17 @@ public class Shop {
 	int skewY = 31;
 	int textSkew = 69;
 	int box_width = 72;
-	
 	int selection = -1;
 	
-	public Shop(TrueTypeFont f) throws SlickException {
-		font = f;
+	int money = 150;
+	
+	
+	public boolean open = false;
+	
+	ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
+	
+	public Shop(TrueTypeFont BitFont) throws SlickException {
+		font = BitFont;
 		
 		shop = new Image("lib/res/Misc/Shop.png");
 		box = new Image("lib/res/Misc/shop_box.png");
@@ -41,9 +58,21 @@ public class Shop {
 		closeHover = new Image("lib/res/Misc/Shop_closeHover.png");
 		xHover = new Image("lib/res/Misc/Shop_xHover.png");
 		buyHover = new Image("lib/res/Misc/Shop_buyHover.png");
+		toolbar = new Image("lib/res/Misc/toolbar.png");
+		
+		M16_icon = new Image("lib/res/Shop/M16_icon.png");
+		Pistol_icon = new Image("lib/res/Shop/Pistol_icon.png");
+		Shotgun_icon = new Image("lib/res/Shop/Shotgun_icon.png");
 		
 		x = (704 - shop.getWidth())/2;
 		y = (544 - shop.getHeight())/2;
+		
+		
+		guns.add(new Pistol(Menu.Pistol, Pistol_icon));
+		guns.add(new M16(Menu.M16, M16_icon));
+		guns.add(new Shotgun(Menu.Shotgun, Shotgun_icon));
+		
+		
 	}
 	
 	
@@ -54,25 +83,38 @@ public class Shop {
 		int my = input.getMouseY();
 		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
+		font.drawString(10, 10, "$" + money, Color.decode("#00942D"));
+		
+		if(input.isKeyPressed(Input.KEY_P)){
+			open = !open;
+		}
+		
+		if(!open) return;
+		
+		
 		shop.draw(x, y);
 		
-		for(int i=0;i<5;i++){
-			Rectangle temp = new Rectangle(placex_box(i), y + skewY, width(box), height(box));
-			selected.draw(placex_box(i), y + skewY);
-			if(mouse.intersects(temp) && input.isMousePressed(0)){
-				selection = i;
-			}
-			font.drawString(placex_box(i) + 10, y + skewY + 42, "$500", Color.decode("#C30000"));
-		}
+		drawBoxes(mouse, input);
 		
-		for(int i=0;i<5;i++){
-			font.drawString(placementX(i), y + skewY - height("P") - 5, "Pistol", Color.decode("#C1C3CE"));
-		}
 		
 		if(selection >= 0)
-			highlight.draw(placex_box(selection) - 2, y + skewY - 2);
+			highlight.draw(placex_box(selection), y + skewY);
 		
-		font.drawString(10, 10, "$150", Color.decode("#00942D"));
+		
+//		M16_icon1.draw(placex_box(0) + (72 - width(M16_icon1))/2, y + skewY + (40 - height(M16_icon1))/2);
+		
+		for(int i=0;i<guns.size();i++){
+			guns.get(i).icon().draw(placex_box(i) + (72 - width(guns.get(i).icon()))/2, y + skewY + (40 - height(guns.get(i).icon()))/2);
+			font.drawString(placex_box(i) + (int) (72 - width(guns.get(i).name()))/2, y + skewY - height(guns.get(i).name()), guns.get(i).name(), Color.decode("#C1C3CE"));
+			
+			if(money < guns.get(i).price()){
+				font.drawString(placex_box(i) + (int) (72 - width("$" + guns.get(i).price()))/2, y + skewY + 42, "$" + guns.get(i).price(), Color.decode("#C30000"));
+			}else{
+				font.drawString(placex_box(i) + (int) (72 - width("$" + guns.get(i).price()))/2, y + skewY + 42, "$" + guns.get(i).price(), Color.decode("#00942D"));
+			}
+			
+		
+		}
 		
 		
 		// grayed out strings C1C3CE
@@ -86,16 +128,32 @@ public class Shop {
 		
 		if(mouse.intersects(xRect)){
 			xHover.draw(x + width(shop) - width(xHover), y);
+			if(input.isMousePressed(0)){
+				open = false;
+			}
 		}
 		if(mouse.intersects(buyRect)){
 			buyHover.draw(x + 380, y + 189);
 		}
 		if(mouse.intersects(closeRect)){
 			closeHover.draw(x + 380, y + 240);
+			if(input.isMousePressed(0)){
+				open = false;
+			}
 		}
 		
 		
 		
+	}
+	
+	public void drawBoxes(Rectangle mouse, Input input){
+		for(int i=0;i<guns.size();i++){
+			Rectangle temp = new Rectangle(placex_box(i), y + skewY, width(box), height(box));
+			box.draw(placex_box(i), y + skewY);
+			if(mouse.intersects(temp) && input.isMousePressed(0)){
+				selection = i;
+			}
+		}
 	}
 	
 	
@@ -107,9 +165,9 @@ public class Shop {
 	
 	
 	
-	private float placementX(int pos){
-		return x + skewX + (box_width - width("Bought"))/2 + (87 * pos);
-	}
+//	private float placementX(int pos){
+//		return x + skewX + (box_width - width("Bought"))/2 + (87 * pos);
+//	}
 	
 	private float placex_box(int pos){
 		return x + skewX + (width(selected) + 4) * pos;

@@ -16,14 +16,15 @@ public class Shotgun extends Weapons {
 	int magezine = 2;
 	
 	
-	public Shotgun(Image gun, Image icon) {
-		gun = this.gun;
-		icon = this.icon;
+	public Shotgun(Image GUN, Image ICON) {
+		gun = GUN;
+		icon = ICON;
 	}
 	
 	public Weapons get() { return new M16(gun, icon); }
 
 	public String name() { return "Shotgun"; }
+	public int price() { return 1000; }
 	
 	public Image image() { return gun; }
 	public Image icon() { return icon; }

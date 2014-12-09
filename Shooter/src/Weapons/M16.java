@@ -15,14 +15,15 @@ public class M16 extends Weapons {
 	int magezine = 30;
 	
 	
-	public M16(Image gun, Image icon) {
-		gun = this.gun;
-		icon = this.icon;
+	public M16(Image GUN, Image ICON) {
+		gun = GUN;
+		icon = ICON;
 	}
 	
 	public Weapons get() { return new M16(gun, icon); }
 
 	public String name() { return "M16"; }
+	public int price() { return 500; }
 	
 	public Image image() { return gun; }
 	public Image icon() { return icon; }
