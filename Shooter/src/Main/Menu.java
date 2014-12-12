@@ -6,8 +6,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
-import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -34,8 +34,9 @@ public class Menu extends BasicGameState{
 		"Training",
 		"Multiplayer",
 		"Statistics",
+		"Highscores",
 		"World Builder",
-		"Exit"
+		"Quit"
 	};
 	
 	String[][] stats = new String[][] {
@@ -47,15 +48,15 @@ public class Menu extends BasicGameState{
 		{ "Loss Rate", "0"    }
 	};
 	
-	private int selected;
-	private int last_selected;
+	private int selected = -1;
+	private int last_selected = -1;
 	public static Sound click;
 	
 	private boolean playstate;
-//	private int current_state = -1;
+	private int current_state = -1;
 	
 	public static boolean mute;
-//	private Image mute_icon;
+	private Image mute_icon;
 	
 	public static Image M16;
 	
@@ -63,6 +64,16 @@ public class Menu extends BasicGameState{
 	
 	public static Image Shotgun;
 	
+	
+	private Image Background;
+	private Image toolbar;
+	
+	private Image img;
+	int rr = 0;
+	int gg = 0;
+	int bb = 0;
+	
+	Random rand = new Random();
 	
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
@@ -89,79 +100,43 @@ public class Menu extends BasicGameState{
     	Pistol = new Image("lib/res/Guns/pistol.png");
     	Shotgun = new Image("lib/res/Shop/Shotgun_icon.png"); // TODO Change to actual gun, not icon
     	
+    	Background = new Image("lib/res/Menu/Background.png");
+    	toolbar = new Image("lib/res/Misc/toolbar.png");
+    	
+    	img = new Image("lib/res/Misc/logo.png");
     	
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		gc.setAlwaysRender(true);
 		g.setBackground(new Color(220, 220, 220));
+//		g.setBackground(Color.decode("#0D0923"));
+//		g.setBackground(Color.black);
 		
-		if(playstate) sbg.enterState(2);
+		Input input = gc.getInput();
 		
-//		Input input = gc.getInput();
+		int mx = input.getMouseX();
+		int my = input.getMouseY();
 		
-//		int mx = input.getMouseX();
-//		int my = input.getMouseY();
+		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
-//		Rectangle mouse = new Rectangle(mx, my, 1, 1);
-		
-//		if(input.isKeyPressed(Input.KEY_BACK)) current_state = -1;
-//		
-//		
-//		if(current_state == -1) menu(sbg, g, gc, input, font1, mouse);
-//		
-//		else if(current_state == 2){
-//			// statistics
-//			stats(g, gc, input, font, font1, mouse);
-//		}
-//		
-//		mute_icon.draw(gc.getWidth() - mute_icon.getWidth() - 10, 10);
-//		
-//		if(current_state != -1)
-//			font.drawString(10, gc.getHeight() - font.getHeight("Back") - 5, "Back", Color.black);
+		Background.draw(0, 0);
 		
 		
-//		pp.draw(200, 200);
+		if(input.isKeyPressed(Input.KEY_BACK)) current_state = -1;
 		
 		
-//		Line line = new Line(0, 234, 500, 234);
-//		g.draw(line);
+		if(current_state == -1) menu(sbg, g, gc, input, font1, mouse);
 		
+		else if(current_state == 2){
+			// statistics
+			stats(g, gc, input, font, font1, mouse);
+		}
 		
-//		float xDistance = (mx) - 201;
-//		float yDistance = 216 - (my);
-//		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-//		m16.draw(201, 216);
-//		m16.setCenterOfRotation(7, m16.getHeight()/2);
-//		m16.setRotation(theta - 90);
-//		
-//		
-//		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-//		float startX = 201;
-//		float startY = 216 + 13/2;
-//		float endX   = (float) (startX + 20 * Math.sin(theta));
-//		float endY   = (float) (startY + 20 * -Math.cos(theta));
-//		
-//		g.setColor(new Color(255, 0, 0, .5f));
-//		
-//		Line line = new Line(endX + 7, endY - 1, mx, my);
-//		g.draw(line);
+		if(current_state != -1){
+			font.drawString(20, gc.getHeight() - font.getHeight("Back") - 2, "Back", Color.black);
+		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		if(pp.getFrame() == 2 || pp.getFrame() == 3 || pp.getFrame() == 7 || pp.getFrame() == 8){
-//			m16.draw(201, 206);
-//		}else
-//			m16.draw(201, 210);
-//		m16.setCenterOfRotation(7, m16.getHeight()/2);
-//		m16.setRotation(theta - 90);
 		
 		
 	}
@@ -169,11 +144,15 @@ public class Menu extends BasicGameState{
 	
 	private void selection(StateBasedGame sbg, int i){
 //		current_state = i;
+		if(options[i].equalsIgnoreCase("training")){
+			Play.inMultiplayer = false;
+			sbg.enterState(2);
+		}
 		
-		
-		if(i == 0){
-			playstate = true;
-		}else if(i == 1){
+		else if(options[i].equalsIgnoreCase("quit")){
+			// TODO - write to xml file
+			System.exit(0);
+		}else if(options[i].equalsIgnoreCase("multiplayer")){
 			Play.inMultiplayer = true;
 			Thread client = new Thread(new Runnable() {
 			     public void run() {
@@ -182,15 +161,11 @@ public class Menu extends BasicGameState{
 			});  
 			client.start();
 			sbg.enterState(2);
-		}else if(i == 2){
-//			current_state = i;
-		}else if(i == 3){
-			sbg.enterState(3);
+		}else if(options[i].equalsIgnoreCase("statistics")){
+			current_state = i;
+		}else if(options[i].equalsIgnoreCase("world builder")){
 			Editor.chose_map = false;
-		}
-		
-		else if(i == options.length - 1){
-			System.exit(0);
+			sbg.enterState(3);
 		}
 		
 		
@@ -198,7 +173,7 @@ public class Menu extends BasicGameState{
 	
 	public void stats(Graphics g, GameContainer gc, Input input, TrueTypeFont font, TrueTypeFont font1, Rectangle mouse){
 		String statistics = "- Statistics -";
-		font1.drawString((gc.getWidth() - font1.getWidth(statistics))/2, 10, statistics, Color.black);
+		font.drawString((gc.getWidth() - font1.getWidth(statistics))/2, 10, statistics, Color.black);
 		// #336699 - Blue
 		// #669999 - Greenish
 		
@@ -256,72 +231,56 @@ public class Menu extends BasicGameState{
 	}
 	
 	private void write(int x, int y, String s, Color color){
-		font1.drawString(x, y, s, color);
+		font.drawString(x, y, s, color);
 	}
 	
+	private float center(float x, float y, float z){
+		return x + (y - z)/2;
+	}
+	
+	private int width(String text) { return font.getWidth(text); }
+	private int height(String text) { return font.getHeight(text); }
+	
 	public void menu(StateBasedGame sbg, Graphics g, GameContainer gc, Input input, TrueTypeFont font1, Rectangle mouse){
+
 		for(int i=0;i<options.length;i++){
-			int w = font1.getWidth("" + options[i]);
-			int h = font1.getHeight("" + options[i]);
-			Rectangle box = new Rectangle((gc.getWidth() - w)/2, 100 + i * (h+5), w, h);
+			int w = toolbar.getWidth();
+			int h = toolbar.getHeight();
+			
+			int x = (int) center(0, 704, w);
+			int y = 100 + (h * 2) * i;
+			
+			Rectangle box = new Rectangle(x, y, w, h);
 			
 			if(mouse.intersects(box)){
+				toolbar.draw(center(0, 704, w), y - 1);
+				if(i != last_selected){
+					rr = rand.nextInt(255);
+					gg = rand.nextInt(255);
+					bb = rand.nextInt(255);
+				}
+				font.drawString((int)center(x, w, width(options[i])), y + (h - height(options[i]))/2 - 1, options[i], new Color(rr, gg, bb));
+				
 				selected = i;
-				if(last_selected != selected) click.play(1, .2f);
+				last_selected = i;
 				if(input.isMousePressed(0)){
+					click.play(1, .3f);
 					selection(sbg, i);
 				}
-			}
-			
-			if(selected == i){
-				font1.drawString((gc.getWidth() - w)/2, 100 + i * (h+5), options[i]);
-				font1.drawString(((gc.getWidth() - w)/2) - font1.getWidth("--") - 10, 100 + i * (h+5), "--");
-				font1.drawString(((gc.getWidth() - w)/2) + w + 10, 100 + i * (h+5), "--");
 			}else{
-				font1.drawString((gc.getWidth() - w)/2, 100 + i * (h+5), options[i], Color.gray);
+				toolbar.draw(center(0, 704, w), y);
+				font.drawString((int)center(x, w, width(options[i])), y + (h - height(options[i]))/2, options[i], Color.decode("#C1C3CE"));
 			}
-			last_selected = selected;
+		
+			
 		}
 		
+		String signature = "Temuulen Khurelbaatar";
+		font.drawString((int)center(0, 704, width(signature)), 500, signature, Color.black);
 		
-		int dWheel = Mouse.getDWheel();
-		if (dWheel > 0) {
-			if(selected <= 0) selected = options.length - 1;
-			else selected --;
-		} else if (dWheel < 0){
-			if(selected == (options.length - 1)) selected = 0;
-			else selected ++;
-		}
+		img.draw(center(0, 704, img.getWidth()), 40);
+		write((int)center(0, 704, width("8bit Shooter")), 20, "8bit Shooter", Color.black);
 		
-		
-		input.enableKeyRepeat();
-		
-		if(input.isKeyPressed(Input.KEY_ENTER)){
-			selection(sbg, selected);
-		}
-		
-		else if(input.isKeyPressed(Input.KEY_S) || input.isKeyPressed(Input.KEY_DOWN)){
-			click.play(1, .2f);
-			if(selected == (options.length - 1))
-				selected = 0;
-			else
-				selected ++;
-		}
-		
-		else if(input.isKeyPressed(Input.KEY_W) || input.isKeyPressed(Input.KEY_UP)){
-			click.play(1, .2f);
-			if(selected == 0)
-				selected = options.length - 1;
-			else
-				selected --;
-		}
-		
-		String signature = "- Developed by: Temuulen Khurelbaatar -";
-		font.drawString((gc.getWidth() - font.getWidth(signature))/2, gc.getHeight() - 30, signature, Color.black);
-		
-		String title = "Shooter";
-		int pos = (gc.getWidth() - font1.getWidth(title))/2;
-		write(pos, 30, title, Color.black);
 		
 	}
 	

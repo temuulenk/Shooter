@@ -28,9 +28,17 @@ public class Shop {
 	Image buyHover;
 	Image toolbar;
 	
-	Image M16_icon;
-	Image Pistol_icon;
-	Image Shotgun_icon;
+	public static Image M16_icon;
+	public static Image Pistol_icon;
+	public static Image Shotgun_icon;
+	
+	public static Image M16_white;
+	public static Image Pistol_white;
+	public static Image Python_white;
+	public static Image Shotgun_white;
+	
+	
+	
 	
 	float x;
 	float y;
@@ -46,7 +54,7 @@ public class Shop {
 	
 	public boolean open = false;
 	
-	ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
+	public static ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
 	
 	public Shop(TrueTypeFont BitFont) throws SlickException {
 		font = BitFont;
@@ -64,13 +72,18 @@ public class Shop {
 		Pistol_icon = new Image("lib/res/Shop/Pistol_icon.png");
 		Shotgun_icon = new Image("lib/res/Shop/Shotgun_icon.png");
 		
+    	M16_white = new Image("lib/res/Misc/m16_white.png");
+    	Pistol_white = new Image("lib/res/Misc/pistol_white.png");
+    	Python_white = new Image("lib/res/Misc/python_white.png");
+    	Shotgun_white = new Image("lib/res/Misc/shotgun_white.png");
+		
 		x = (704 - shop.getWidth())/2;
 		y = (544 - shop.getHeight())/2;
 		
 		
-		guns.add(new Pistol(Menu.Pistol, Pistol_icon));
-		guns.add(new M16(Menu.M16, M16_icon));
-		guns.add(new Shotgun(Menu.Shotgun, Shotgun_icon));
+		guns.add(new Pistol(Menu.Pistol, Pistol_icon, Pistol_white));
+		guns.add(new M16(Menu.M16, M16_icon, M16_white));
+//		guns.add(new Shotgun(Menu.Shotgun, Shotgun_icon, Shotgun_white));
 		
 		
 	}

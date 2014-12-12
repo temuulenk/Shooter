@@ -1,16 +1,23 @@
 package Main;
+import java.util.ArrayList;
+
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+
+import Weapons.Pistol;
+import Weapons.Weapons;
 
 
 public class Play extends BasicGameState {
@@ -40,7 +47,6 @@ public class Play extends BasicGameState {
 	public static boolean inMultiplayer = false;
 	
 	
-	
 	float x = 100;
 	float y = 100;
 	SpriteSheet p;
@@ -62,17 +68,26 @@ public class Play extends BasicGameState {
 	public static Image wall;
 	public static Image background;
 	
+	private Music background_music;
+	
+	
+	Image pistol;
+	
+	
+	ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
+	
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		font = Menu.font;
 		font1 = Menu.font1;
+		
+		shop = new Shop(font);
 		
 		tilemap = new TileMap();
 		player = new Player(tilemap);
 		gun = new Gun();
 		client_handler = new ClientHandler();
 		chat = new Chat(font);
-		shop = new Shop(font);
 		
 		
     	p = new SpriteSheet("lib/res/Misc/p.png", 16, 30);
@@ -81,12 +96,19 @@ public class Play extends BasicGameState {
     	m16 = new Image("lib/res/Misc/m16.png");
     	m16_1 = m16.getFlippedCopy(true, false);
     	
+    	pistol = new Image("lib/res/Misc/pistol.png");
+    	
     	health = new Image("lib/res/Misc/health.png");
     	health1 = new Image("lib/res/Misc/health_scale.png");
 		
     	
     	wall = new Image("lib/res/Misc/wall.png");
     	background = new Image("lib/res/Misc/background.png");
+    	
+    	background_music = new Music("lib/res/Sounds/Derek.wav");
+    	
+    	
+    	guns.add(new Pistol(Menu.Pistol, Shop.Pistol_icon, Shop.Pistol_white));
     	
     	
 	}
@@ -112,136 +134,60 @@ public class Play extends BasicGameState {
 //	    translate_y = (int)-player.getY() + gc.getHeight()/2;
 //		
 //		glTranslatef(translate_x, translate_y, 0);
-//	    
-	    tilemap.draw(g, gc, input);
+
+//		if(background_music.playing() == false){
+//			background_music.loop();
+//		}
+		
+		g.drawString("" + gc.getFPS(), 100, 100);
+		
+		tilemap.draw(g, gc, input);
 	    player.draw(g, gc, input, font);
 		gun.logic(g, gc, input);
-		
-		shop.draw(g, gc);
-		
-		
-//		font.drawString(100, 100, "Bought", Color.black);
-//		font1.drawString(100, 120, "Bought", Color.black);
-		
-//		client_handler.draw(g, gc, input, font);
 //		
-//		
-//		
-//		float xDistance = (mx) - 201;
-//		float yDistance = 476 - (my);
-//		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-//		m16.draw(201, 476);
-//		m16.setCenterOfRotation(7, m16.getHeight()/2);
-//		m16.setRotation(theta - 90);
-//		
-//		
-//		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-//		float startX = 201;
-//		float startY = 476 + 13/2;
-//		float endX   = (float) (startX + 20 * Math.sin(theta));
-//		float endY   = (float) (startY + 20 * -Math.cos(theta));
-//		
-//		g.setColor(new Color(255, 0, 0, .5f));
-//		
-//		Line line = new Line(endX + 7, endY - 1, mx, my);
-//		g.draw(line);
+//		shop.draw(g, gc);
+	    
+	    
+//	    pistol.draw(((player.getX() + 32 ) - pistol.getWidth()), player.getY() + 8);
+	    
+		
+		// PISTOL - 9 PIXELS
+		
+//	    guns.get(0).gunRight().draw((player.getX() + 16) + guns.get(0).OFFSET().getX(), player.getY() + guns.get(0).OFFSET().getY());
+	    
+	    
+//	    Point OFFSET_X = new Point(1, 8);
+//	    
+//		if(Player.facing_right){
+//			pistol.draw((player.getX() + 16) + OFFSET_X.getX(), player.getY() + OFFSET_X.getY());
+//			
+//			
+//		}else if(Player.facing_left){
+//	
+//			pistol.getFlippedCopy(true, false).draw((player.getX()) - OFFSET_X.getX() - pistol.getWidth(), player.getY() + OFFSET_X.getY());
+//			
+//		}
+		
+	    
+		
+		health.draw((704 - health.getWidth())/2, 10);
+		float scale = health.getWidth() / player.max_health();
+		health1.getScaledCopy(Player.health * (int) scale, 6).draw((704 - health.getWidth())/2 + 2, 12);
+		font.drawString((704 - health.getWidth())/2 + (health.getWidth() - font.getWidth("" + Player.health))/2, 
+				10 + (health.getHeight() - font.getHeight("1"))/2, 
+				"" + Player.health);
 		
 		
 		
-//		chat.draw(g, gc);
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-//		if(tilemap.map[my/32][mx/32].equals("w")) System.out.println("YES");
+		if(input.isKeyPressed(Input.KEY_T)){
+			player.set_health(player.health() + 2);
+		}
 		
 		
 		
 //		// Reset viewport
 //		glTranslatef(-translate_x, -translate_y, 0);
 //		displayFPS(font, gc.getFPS());
-		
-		
-//		player.healthbar(g, font);
-//		client_handler.names(font, input);
-		
-		
-		
-		
-//		pp.draw(x, y);
-//		
-//		boolean right = true;
-//		boolean left = false;
-//		float center = (100 + (16/2));
-//		
-//		if(mx > center) {
-//			left = false;
-//			right = true;
-//		}
-//		else if(mx < center) {
-//			right = false;
-//			left = true;
-//		}
-//		
-//		
-//		float xDistance = (mx) - (x + 1);
-//		float yDistance = (y + 6) - (my);
-//		float theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-//		
-//		m16.setCenterOfRotation(7, m16.getHeight()/2);
-//		if(rotate)
-//			m16.setRotation(theta - 90);
-//		
-//		
-//		if(right)
-//			m16.draw(x + 1, y + 6);
-//		
-//		if(left){
-//			m16_1.setCenterOfRotation(m16.getWidth() - 7, m16.getHeight()/2);
-//			m16_1.draw(x - 16, y + 6);
-//			m16_1.setRotation(theta + 90);
-//		}
-//		
-//		font.drawString(20, 20, "$7000", Color.decode("#00942D"));
-//		
-//		health.draw((704 - health.getWidth())/2, 10);
-//		
-//		health1.getScaledCopy(300, 6).draw((704 - health.getWidth())/2 + 2, 12);
-//		
-//		font.drawString(100, 10, "100", new Color(194, 0, 0));
-//		
-//		
-//		font.drawString(100, 300, "The quick brown fox jumps over the lazy dog.", Color.decode("#028CAA"));
-//		
-//		if(input.isMousePressed(0)){
-//			last = m16.getRotation();
-//			shooting = true;
-//			rotate = false;
-//		}
-//		
-//		if(shooting) {
-//			m16.rotate(-3);
-//			if(m16.getRotation() < last - 7) {
-//				shooting = false;
-//				rotate_back = true;
-//			}
-//		}
-//		
-//		if(rotate_back) {
-//			rotate = true;
-//			rotate_back = false;
-//		}
-//		
-//		if(input.isKeyDown(Input.KEY_D)){
-//			x+= 3;
-//		}
-		
 		
 		
 		

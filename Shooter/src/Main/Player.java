@@ -51,7 +51,7 @@ public class Player {
 	
 	public static boolean moving;
 	
-	public static int max_health = 5;
+	public static int max_health = 15;
 	public static int health = max_health;
 	public int screen_health = health;
 	
@@ -129,8 +129,7 @@ public class Player {
 		return moving;
 	}
 	public void set_health(int i){
-		if(i >= 0)
-			health = i;
+		health = i;
 	}
 	
 	public void setX(int i){ x = i; }
@@ -149,6 +148,14 @@ public class Player {
 	}
 	public float getY(){
 		return (y - height/2);
+	}
+	
+	public float centerX(){
+		return getX() + hero_rightSS.getSubImage(0, 0).getWidth() / 2;
+	}
+	
+	public float centerY() {
+		return getY() + hero_rightSS.getSubImage(0, 0).getHeight() / 2;
 	}
 	
 	public void logic(GameContainer gc, Input input){
@@ -265,7 +272,8 @@ public class Player {
 	
 	
 	public void handler(GameContainer gc, Input input){
-		
+		if(health < 0) health = 0;
+		if(health > max_health) health = max_health;
 		if(facing_right) facing_left = false;
 		
 		if(health > 0){
@@ -317,8 +325,6 @@ public class Player {
 	}
 	
 	public void draw(Graphics g, GameContainer gc, Input input, TrueTypeFont font){
-		
-		centerX = getX() + hero_rightSS.getSubImage(0, 0).getWidth() / 2;
 		
 		if(dy < 0) jumped = true;
 		else jumped = false;

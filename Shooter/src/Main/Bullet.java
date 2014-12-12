@@ -94,6 +94,7 @@ public class Bullet {
 //			bullet.draw(x, y);
 			bLine = new Line(startX, startY, x, y);
 			g.draw(bLine);
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}

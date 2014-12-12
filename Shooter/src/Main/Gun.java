@@ -1,6 +1,10 @@
 package Main;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.swing.Timer;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -9,8 +13,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
-import org.newdawn.slick.geom.Line;
 import org.newdawn.slick.geom.Rectangle;
+
+import Weapons.Weapons;
 
 
 public class Gun {
@@ -26,6 +31,7 @@ public class Gun {
 	Image gun_right;
 	Image gun_left;
 	Image bullet_image;
+	public static Image recoil;
 	
 	Sound laser_sound;
 	
@@ -33,6 +39,7 @@ public class Gun {
 	boolean show_statistics;
 	
 	public static float theta;
+	public static boolean reloading;
 	
 	Sound mp5;
 	
@@ -41,6 +48,30 @@ public class Gun {
 	Random rand = new Random();
 	
 	int count = 0;
+	int reload_timer;
+	
+	ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
+	
+	public static Weapons wielding;
+	
+	float playerX;
+	float playerY;
+	
+	float offsetX;
+	float offsetY;
+	float xDistance;
+	float yDistance;
+	
+	Timer reloadTimer;
+	
+	
+	public class TimerListener implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+			reload_timer ++;
+		}
+	}
+	
+	
 
 	public Gun() throws SlickException {
 		
@@ -51,13 +82,21 @@ public class Gun {
 		laser_sound = new Sound("lib/res/Sounds/laser_sound.wav");
 		
 		mp5 = new Sound("lib/res/Sounds/machine_gun.wav");
+		recoil = new Image("lib/res/Misc/recoil.png");
+		
+		for(Weapons weapon: Shop.guns){
+			guns.add(weapon);
+		}
+		
+		reloadTimer = new Timer(100, new TimerListener());
 		
 	}
 	
 	public void logic(Graphics g, GameContainer gc, Input input){
+
+		wielding = guns.get(0);
 		
-//		x = Play.player.getX();
-//		y = Play.player.getY();
+		
 		
 		int mx = input.getMouseX() - Play.translate_x;
 		int my = input.getMouseY() - Play.translate_y;
@@ -65,73 +104,139 @@ public class Gun {
 		shootX = (x);
 		shootY = (y + gun_right.getHeight()/2);
 		
-		float xDistance = (mx) - x;
-		float yDistance = y - (my);
-		theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
 		
 		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		g.draw(mouse);
 		
 		
+		g.setColor(new Color(194, 0, 0));
+		g.setAntiAlias(true);
+		g.setLineWidth(1);
+		drawBullets(g);
+		
+		playerX = Play.player.getX();
+		playerY = Play.player.getY();
+		
+		offsetX = wielding.OFFSET().getX();
+		offsetY = wielding.OFFSET().getY();
+		
+		// Gun directional handler
+		// 16 PIXELS - Width of player 
 		if(Player.facing_right){
-			x = Player.centerX - 5;
-			if(Player.moving && (Player.hero_right.getFrame() == 2 || Player.hero_right.getFrame() == 3 || Player.hero_right.getFrame() == 7 || Player.hero_right.getFrame() == 8)){
-				y = Play.player.getY() + 4;
-			}else
-				y = Play.player.getY() + 6;
-			gun_right.setCenterOfRotation(8, gun_right.getHeight()/2);
-			gun_right.draw(x, y);
-			gun_right.setRotation(theta - 90);
+			float tempx = playerX + 16 + offsetX;
+			float tempy = 0;
+			if(Player.moving && 
+				(Player.hero_right.getFrame() == 2 || 
+				 Player.hero_right.getFrame() == 3 || 
+				 Player.hero_right.getFrame() == 7 || 
+				 Player.hero_right.getFrame() == 8)
+				){
+				tempy = playerY + offsetY - 2;
+			}else{
+				tempy = playerY + offsetY;
+			}
+			wielding.gunRight().draw(tempx, tempy);
 			
+			xDistance = (mx) - tempx;
+			yDistance = tempy - (my);
+			theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
 			
+			wielding.gunRight().setCenterOfRotation(
+				- wielding.CENTER().getX(), 
+				wielding.CENTER().getY()
+			);
+			wielding.gunRight().setRotation(theta - 90);
 		}
 		
 		
 		else if(Player.facing_left){
-			x = Play.player.getX();
-			y = Play.player.getY() + 6;
+			float tempx = playerX - wielding.gunLeft().getWidth() - offsetX;
+			float tempy = 0;
+			if(Player.moving && 
+				(Player.hero_left.getFrame() == 2 || 
+				 Player.hero_left.getFrame() == 3 || 
+				 Player.hero_left.getFrame() == 7 || 
+				 Player.hero_left.getFrame() == 8)
+				){
+				tempy = playerY + offsetY - 2;
+			}else{
+				tempy = playerY + offsetY;
+			}
+			wielding.gunLeft().draw(tempx, tempy);
 			
-			if(Player.moving && (Player.hero_left.getFrame() == 2 || Player.hero_left.getFrame() == 3 || Player.hero_left.getFrame() == 7 || Player.hero_left.getFrame() == 8)){
-				y = Play.player.getY() + 4;
-			}else
-				y = Play.player.getY() + 6;
+			xDistance = (mx) - tempx;
+			yDistance = tempy - (my);
+			theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
 			
-			gun_left.setCenterOfRotation(gun_left.getWidth() - 8, gun_right.getHeight()/2);
-			gun_left.draw(x - gun_left.getWidth()/2 - 1, y);
-			gun_left.setRotation(theta + 90);
+			wielding.gunLeft().setCenterOfRotation(
+				wielding.CENTER().getX() + wielding.gunLeft().getWidth(), 
+				wielding.CENTER().getY()
+			);
+			wielding.gunLeft().setRotation(theta + 90);
 		}
 		
 
 			
-		
-		if(input.isMouseButtonDown(0) && count > 5){
-			shot = true;
-			shoot(g, theta, mx, my);
-			count = 0;
+		if(wielding.once()){
+			if(wielding.ammo() >= 0 && input.isMousePressed(0) && count > 5){
+				shot = true;
+				shoot(g, theta, mx, my);
+				count = 0;
+				wielding.shoot(1);
+			}
+		}else{
+			if(wielding.ammo() >= 0 && input.isMouseButtonDown(0) && count > 5){
+				shot = true;
+				shoot(g, theta, mx, my);
+				count = 0;
+				wielding.shoot(1);
+			}
 		}
-		
 		count ++;
 		
 		
-		if(Player.facing_right){
+		
+		if(input.isKeyPressed(Input.KEY_R) && reloadTimer.isRunning() == false){
+			// TODO Reload..
+			reloading = true;
+			reloadTimer.start();
 		}
 		
-		g.setColor(new Color(194, 0, 0));
-		g.setAntiAlias(true);
+		if(wielding.ammo() == wielding.magezine()) reloading = false;
+		
+		if(reloading){
+			if(reloading){
+				if(reload_timer > 1){
+					wielding.reload(1);
+					reload_timer = 0;
+				}
+			}
+		}else{
+			reloadTimer.stop();
+		}
+		
+		
+		wielding.icon().draw(10, 10);
+		
+		g.setAntiAlias(false);
 		g.setLineWidth(1);
-		theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-		float startX = Player.centerX;
-		float startY = y + 15 - 10;
-		float endX   = (float) (startX + (16/2) * Math.sin(theta));
-		float endY   = (float) (startY + 15 * -Math.cos(theta));
+		
+		for(int i=0;i<wielding.magezine();i++){
+			if(i <= wielding.ammo()){
+				g.setColor(Color.white);
+			}else{
+				g.setColor(Color.gray);
+			}
+			Rectangle box = new Rectangle(
+					20 + wielding.icon().getWidth() + (4 * i), 
+					15, 
+					2,
+					6
+				);
+			g.fill(box);
+		}
 		
 		
-		Line line = new Line(endX, endY, mx, my);
-//		g.draw(line);
-		
-		
-		drawBullets(g);
-
 		
 	}
 	
@@ -139,30 +244,27 @@ public class Gun {
 	public void shoot(Graphics g, float theta, int toX, int toY){
 		try{
 			theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
-			float startX = x;
-			float startY = y + gun_right.getHeight()/2;
-//			int mid = (int) startY;
+			
 			int re = rand.nextInt(15) - 5;
-			float endX   = (float) (startX + 20 * Math.sin(theta));
-			float endY   = (float) (startY + 20 * -Math.cos(theta));
+			int distance = 25; 
+
 			
-			if(Player.facing_right){
-				bullets.add(new Bullet(bullet_image, endX + 10, endY - (bullet_image.getHeight()), toX, toY + re, 5));
-				String bullet_str = "" + endX + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
-				if(Play.inMultiplayer)
-					Client.send("bullet:" + bullet_str);
-			}else{
-				bullets.add(new Bullet(bullet_image, endX + 5, endY - (bullet_image.getHeight()), toX, toY + re, 5));
-				String bullet_str = "" + (endX + 15) + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
-				if(Play.inMultiplayer)
-					Client.send("bullet:" + bullet_str);
-			}
+			float xx = Play.player.getX() + 8;
+			float yy = Play.player.getY() + 20 - gun_right.getHeight()/2;
+			float xDistance = (toX) - xx;
+			float yDistance = yy - (toY);
+			double angle = Math.atan2(-(yDistance), (xDistance)) * 180/Math.PI;
+			float xSpawn = (float) (xx + Math.cos(angle * Math.PI/180) * distance);
+			float ySpawn = (float) (yy + Math.sin(angle * Math.PI/180) * distance);
 			
-//			laser_sound.play(1, .4f);
+			
+			bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + re, 5));
+			
+			
 			mp5.play(.5f, .3f);
 			shot = false;
 			
-			// TODO: Send to server and Barrel Explosion..
+			// TODO: Send to server	..
 		} catch(Exception e){
 			e.printStackTrace();
 		}
