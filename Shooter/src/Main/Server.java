@@ -112,6 +112,10 @@ class clientThread extends Thread {
 						}
 						break;
 					}
+					
+					else if(line.startsWith("MAP")){
+						System.out.println(line);
+					}
 
 					else if(line.startsWith("bullet")){
 						for(int i=0;i<Server.count;i++){

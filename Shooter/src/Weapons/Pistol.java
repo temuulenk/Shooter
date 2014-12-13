@@ -1,11 +1,9 @@
 package Weapons;
 
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Point;
-
-import Main.Bullet;
-import Main.Gun;
 
 public class Pistol extends Weapons {
 	
@@ -14,23 +12,28 @@ public class Pistol extends Weapons {
 	Image icon;
 	Image usingIcon;
 	
+	Sound gunshot;
+	
 	float x;
 	float y;
 	
 	int speed = 200;
 	int reload = 50;
-	int magezine = 10;
+	int magezine = 7;
 	int ammo = magezine;
 	
 	
-	public Pistol(Image GUN, Image ICON, Image USING) {
+	public Pistol(Image GUN, Image ICON, Image USING) throws SlickException {
 		gun = GUN;
 		gun1 = GUN.getFlippedCopy(true, false);
 		icon = ICON;
 		usingIcon = USING;
+		
+		gunshot = new Sound("lib/res/Sounds/Pistol_sound.wav");
+		
 	}
 	
-	public Weapons get() { return new Pistol(gun, icon, usingIcon); }
+	public Weapons get() throws SlickException { return new Pistol(gun, icon, usingIcon); }
 
 	public String name() { return "Pistol"; }
 	public int price() { return 100; }
@@ -56,6 +59,10 @@ public class Pistol extends Weapons {
 	public float getY(){ return x; }
 	public void setX(int i) { x = i; }
 	public void setY(int i) { y = i; }
+	
+	public Sound gunshot(){
+		return gunshot;
+	}
 
 	public int speed() { return speed; }
 	public int reload_time() { return reload; }

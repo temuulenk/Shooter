@@ -48,15 +48,12 @@ public class Menu extends BasicGameState{
 		{ "Loss Rate", "0"    }
 	};
 	
-	private int selected = -1;
 	private int last_selected = -1;
 	public static Sound click;
 	
-	private boolean playstate;
 	private int current_state = -1;
 	
 	public static boolean mute;
-	private Image mute_icon;
 	
 	public static Image M16;
 	
@@ -94,7 +91,7 @@ public class Menu extends BasicGameState{
     	
 //    	mute_icon = new Image("lib/res/Menu/MusicNote.png");
     	click = new Sound("lib/res/Sounds/click.wav");
-    	gc.setMouseCursor(new Image("lib/res/misc/mouse.png"), 0, 0);
+    	gc.setMouseCursor(new Image("lib/res/Misc/mouse.png"), 0, 0);
     	
     	M16 = new Image("lib/res/Guns/m16.png");
     	Pistol = new Image("lib/res/Guns/pistol.png");
@@ -261,7 +258,6 @@ public class Menu extends BasicGameState{
 				}
 				font.drawString((int)center(x, w, width(options[i])), y + (h - height(options[i]))/2 - 1, options[i], new Color(rr, gg, bb));
 				
-				selected = i;
 				last_selected = i;
 				if(input.isMousePressed(0)){
 					click.play(1, .3f);

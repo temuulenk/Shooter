@@ -65,6 +65,30 @@ public class TileMap {
 		}catch (Exception e){
 			System.out.println("Error loading map");
 		}
+	    
+	    String Julian = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwaaaaaaaaaaaaaaaawwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaaaaaaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaaaaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwaaaaawwwwwwwwwwwwwwwwwwwaaaaawwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwaaaaaaaaaaaaawwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwaaaaawwwwwwwwwwwwwwwwwwwaaaaawwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaaaaaaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaaaaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwaaaaaawwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwaaaaawwwwwwwwaaaaawwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwaaaaawwwwwwwwwwwwwwwwwwwwwwaaaaawwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaawwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwaaab:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+	    
+	    String[] split = Julian.split(":");
+	    
+	    for(int i=0;i<50;i++){
+	    	
+	    	String s = split[i];
+	    	for(int j=0;j<s.length();j++){
+	    		map[i][j] = s.substring(j, j+1);
+//	    		if(s.substring(j, j+1).equals("a"))
+//	    			map[i][j] = "w";
+//	    		else if(s.substring(j, j+1).equals("w"))
+//	    			map[i][j] = "a";
+//	    		else{
+//	    			map[i][j] = "b";
+//	    		}
+	    	}
+	    	
+	    }
+	    
+	    
+	    
+	    
 	}
 	
 	
@@ -120,9 +144,11 @@ public class TileMap {
 						  && (Math.abs((int) mapY - (row*tileSize)) < (544 / 2) + 40);	
 				
 				if(rc.equals("w")){
-					g.fillRect(col * 32, row * 32, 32, 32);
-//					if(inBound)
-//						background.draw(col * 32, row * 32);
+					g.setColor(Color.decode("#003366"));
+//					g.fillRect(col * 32, row * 32, 32, 32);
+					if(inBound){
+						g.fillRect(col * 32, row * 32, 32, 32);
+					}
 				}else if(rc.equals("a")){
 					Play.wall.draw(col * 32, row * 32);
 				}

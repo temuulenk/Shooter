@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.swing.Timer;
 
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -13,7 +14,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
-import org.newdawn.slick.geom.Rectangle;
 
 import Weapons.Weapons;
 
@@ -48,9 +48,10 @@ public class Gun {
 	Random rand = new Random();
 	
 	int count = 0;
-	int reload_timer;
+	int reload_timer = 100;
+	int reload_time = 100;
 	
-	ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
+	public static ArrayList<Weapons> guns = new ArrayList<Weapons>(0);
 	
 	public static Weapons wielding;
 	
@@ -63,6 +64,15 @@ public class Gun {
 	float yDistance;
 	
 	Timer reloadTimer;
+	
+	public static int currentGun = 0;
+	
+	Sound reloadSound;
+	Sound tick;
+	
+	public static boolean allowedToShoot = true;
+	
+	public static ArrayList<Weapons> inventory = new ArrayList<Weapons>(0);
 	
 	
 	public class TimerListener implements ActionListener{
@@ -88,15 +98,36 @@ public class Gun {
 			guns.add(weapon);
 		}
 		
-		reloadTimer = new Timer(100, new TimerListener());
+		reloadSound = new Sound("lib/res/Sounds/reload_sound.wav");
+		tick = new Sound("lib/res/Sounds/tick.wav");
+
+		reloadTimer = new Timer(reload_time, new TimerListener());
+		
+		inventory.add(Shop.gun(0));
+		
+		
+		wielding = inventory.get(0);
+		inventory.add(Shop.gun(1));
 		
 	}
 	
 	public void logic(Graphics g, GameContainer gc, Input input){
 
-		wielding = guns.get(0);
+	    int dWheel = Mouse.getDWheel();
+	    if (dWheel < 0) {
+	    	reloading = false;
+	    	if(currentGun == 0) currentGun = inventory.size() - 1;
+	    	else currentGun --;
+			wielding = inventory.get(currentGun);
+	    } else if (dWheel > 0){
+	    	reloading = false;
+			if(currentGun + 1> inventory.size() - 1) currentGun = 0;
+			else currentGun ++;
+			wielding = inventory.get(currentGun);
+	    }
 		
-		
+	    
+	    
 		
 		int mx = input.getMouseX() - Play.translate_x;
 		int my = input.getMouseY() - Play.translate_y;
@@ -105,9 +136,7 @@ public class Gun {
 		shootY = (y + gun_right.getHeight()/2);
 		
 		
-		Rectangle mouse = new Rectangle(mx, my, 1, 1);
-		g.draw(mouse);
-		
+//		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
 		g.setColor(new Color(194, 0, 0));
 		g.setAntiAlias(true);
@@ -119,6 +148,7 @@ public class Gun {
 		
 		offsetX = wielding.OFFSET().getX();
 		offsetY = wielding.OFFSET().getY();
+		
 		
 		// Gun directional handler
 		// 16 PIXELS - Width of player 
@@ -149,6 +179,7 @@ public class Gun {
 		}
 		
 		
+		
 		else if(Player.facing_left){
 			float tempx = playerX - wielding.gunLeft().getWidth() - offsetX;
 			float tempy = 0;
@@ -173,30 +204,32 @@ public class Gun {
 				wielding.CENTER().getY()
 			);
 			wielding.gunLeft().setRotation(theta + 90);
+			
+			
 		}
 		
 
-			
-		if(wielding.once()){
-			if(wielding.ammo() >= 0 && input.isMousePressed(0) && count > 5){
-				shot = true;
-				shoot(g, theta, mx, my);
-				count = 0;
-				wielding.shoot(1);
+		
+		if(allowedToShoot){
+			if(wielding.once()){
+				if(wielding.ammo() >= 0 && input.isMousePressed(0) && count > 5){
+					shot = true;
+					shoot(g, theta, mx, my);
+					count = 0;
+				}
+			}else{
+				if(wielding.ammo() >= 0 && input.isMouseButtonDown(0) && count > 5){
+					shot = true;
+					shoot(g, theta, mx, my);
+					count = 0;
+				}
 			}
-		}else{
-			if(wielding.ammo() >= 0 && input.isMouseButtonDown(0) && count > 5){
-				shot = true;
-				shoot(g, theta, mx, my);
-				count = 0;
-				wielding.shoot(1);
-			}
+			count ++;
 		}
-		count ++;
 		
 		
 		
-		if(input.isKeyPressed(Input.KEY_R) && reloadTimer.isRunning() == false){
+		if(input.isKeyPressed(Input.KEY_R) && reloadTimer.isRunning() == false && wielding.ammo() < wielding.magezine() && !Shop.open){
 			// TODO Reload..
 			reloading = true;
 			reloadTimer.start();
@@ -216,25 +249,6 @@ public class Gun {
 		}
 		
 		
-		wielding.icon().draw(10, 10);
-		
-		g.setAntiAlias(false);
-		g.setLineWidth(1);
-		
-		for(int i=0;i<wielding.magezine();i++){
-			if(i <= wielding.ammo()){
-				g.setColor(Color.white);
-			}else{
-				g.setColor(Color.gray);
-			}
-			Rectangle box = new Rectangle(
-					20 + wielding.icon().getWidth() + (4 * i), 
-					15, 
-					2,
-					6
-				);
-			g.fill(box);
-		}
 		
 		
 		
@@ -242,6 +256,8 @@ public class Gun {
 	
 	
 	public void shoot(Graphics g, float theta, int toX, int toY){
+		reloading = false;
+		wielding.shoot(1);
 		try{
 			theta = (float) (theta * Math.PI / 180); // converting to radians from degrees
 			
@@ -258,10 +274,16 @@ public class Gun {
 			float ySpawn = (float) (yy + Math.sin(angle * Math.PI/180) * distance);
 			
 			
-			bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + re, 5));
 			
+			if(wielding.name().equalsIgnoreCase("shotgun")){
+				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
+				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
+				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
+			}else{
+				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + re, 5));
+			}
 			
-			mp5.play(.5f, .3f);
+			wielding.gunshot().play(1, .5f);
 			shot = false;
 			
 			// TODO: Send to server	..

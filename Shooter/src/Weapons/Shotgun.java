@@ -1,50 +1,59 @@
 package Weapons;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Point;
 
-public class Shotgun {
+public class Shotgun extends Weapons {
 	
 	Image gun;
+	Image gun1;
 	Image icon;
 	Image usingIcon;
+	
+	Sound gunshot;
 	
 	float x;
 	float y;
 	
-	// in milliseconds
-	int speed = 500;
-	int reload = 500;
-	int magezine = 2;
+	int speed = 200;
+	int reload = 50;
+	int magezine = 3;
+	int ammo = magezine;
 	
-	
-	public Shotgun(Image GUN, Image ICON, Image USING) {
+	public Shotgun(Image GUN, Image ICON, Image USING) throws SlickException {
 		gun = GUN;
+		gun1 = GUN.getFlippedCopy(true, false);
 		icon = ICON;
 		usingIcon = USING;
+		gunshot = new Sound("lib/res/Sounds/Pistol_sound.wav");
 	}
 	
-//	public Weapons get() { return new M16(gun, icon, usingIcon); }
+	
+	public Weapons get() throws SlickException { return new Pistol(gun, icon, usingIcon); }
 
 	public String name() { return "Shotgun"; }
-	public int price() { return 1000; }
+	public int price() { return 500; }
 	
-	public Image image() { return gun; }
-	public Image image1() { return gun; }
+	public Image gunRight() { return gun;  }
+	public Image gunLeft()  { return gun1; }
+	
 	public Image icon() { return icon; }
 	public Image usingIcon() { return usingIcon; }
 	
-	public Point right_skew() { 
-		return new Point(2, 6);
+
+	public Sound gunshot(){
+		return gunshot;
 	}
-	public Point left_skew() { 
-		return new Point(2, 6);
+	
+	
+	public Point OFFSET() {
+		return new Point(-13, 8);
 	}
-	public Point center() {
-		return new Point(2, 6);
-	}
-	public Point center1() {
-		return new Point(2, 6);
+	
+	public Point CENTER() {
+		return new Point(-8, 4);
 	}
 	
 
@@ -56,6 +65,14 @@ public class Shotgun {
 	public int speed() { return speed; }
 	public int reload_time() { return reload; }
 	public int magezine() { return magezine; }
+	public int ammo() { return ammo; }
+	public void shoot(int num){ ammo -= num; }
+	public void reload(int num) { ammo += num; }
+	
+	public boolean once() { 
+		return true;
+	}
+
 	
 	
 

@@ -90,7 +90,11 @@ public class Player {
 	public static double angleToTurn;
 	public static boolean jumped;
 	
-	Image jump;
+	public static Image jump;
+	
+	public static float freeCamX = 200;
+	public static float freeCamY = 550;
+	
 	
 	
 	public Player(TileMap map) throws SlickException {
@@ -326,6 +330,13 @@ public class Player {
 	
 	public void draw(Graphics g, GameContainer gc, Input input, TrueTypeFont font){
 		
+	  	float cos = (getX() - freeCamX);
+    	float sin = (getY() - freeCamY);
+		
+    	freeCamX += (cos / 10);
+    	freeCamY += (sin / 10);
+    	
+		
 		if(dy < 0) jumped = true;
 		else jumped = false;
 		
@@ -408,7 +419,7 @@ public class Player {
 				}else if(facing_right){
 					jump.getFlippedCopy(true, false).draw(getX(), getY());
 				}
-			}
+			} 
 			
 			if(!jumped){
 				if(!moving && facing_right){

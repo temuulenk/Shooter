@@ -1,9 +1,9 @@
 package Weapons;
 
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Point;
-
-import Main.Play;
 
 public class M16 extends Weapons {
 	
@@ -12,26 +12,29 @@ public class M16 extends Weapons {
 	Image icon;
 	Image usingIcon;
 	
+	Sound gunshot;
+	
 	float x;
 	float y;
 	
 	int speed = 200;
 	int reload = 50;
-	int magezine = 10;
+	int magezine = 15;
 	int ammo = magezine;
 	
-	public M16(Image GUN, Image ICON, Image USING) {
+	public M16(Image GUN, Image ICON, Image USING) throws SlickException {
 		gun = GUN;
 		gun1 = GUN.getFlippedCopy(true, false);
 		icon = ICON;
 		usingIcon = USING;
+		gunshot = new Sound("lib/res/Sounds/gun.wav");
 	}
 	
 	
-	public Weapons get() { return new Pistol(gun, icon, usingIcon); }
+	public Weapons get() throws SlickException { return new Pistol(gun, icon, usingIcon); }
 
 	public String name() { return "M16"; }
-	public int price() { return 100; }
+	public int price() { return 700; }
 	
 	public Image gunRight() { return gun;  }
 	public Image gunLeft()  { return gun1; }
@@ -40,6 +43,10 @@ public class M16 extends Weapons {
 	public Image usingIcon() { return usingIcon; }
 	
 
+	public Sound gunshot(){
+		return gunshot;
+	}
+	
 	
 	public Point OFFSET() {
 		return new Point(-13, 8);

@@ -1,4 +1,6 @@
 package Main;
+import static org.lwjgl.opengl.GL11.glTranslatef;
+
 import java.util.ArrayList;
 
 import org.newdawn.slick.Animation;
@@ -7,7 +9,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
@@ -18,7 +19,6 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import Weapons.Pistol;
 import Weapons.Weapons;
-
 
 public class Play extends BasicGameState {
 	public Play(int state) {}
@@ -68,7 +68,9 @@ public class Play extends BasicGameState {
 	public static Image wall;
 	public static Image background;
 	
-	private Music background_music;
+//	private Music background_music;
+	
+	public static Sound gun_sound;
 	
 	
 	Image pistol;
@@ -105,7 +107,8 @@ public class Play extends BasicGameState {
     	wall = new Image("lib/res/Misc/wall.png");
     	background = new Image("lib/res/Misc/background.png");
     	
-    	background_music = new Music("lib/res/Sounds/Derek.wav");
+//    	background_music = new Music("lib/res/Sounds/Derek.wav");
+    	gun_sound = new Sound("lib/res/Sounds/gun.wav");
     	
     	
     	guns.add(new Pistol(Menu.Pistol, Shop.Pistol_icon, Shop.Pistol_white));
@@ -118,7 +121,8 @@ public class Play extends BasicGameState {
 //		g.setBackground(Color.black);
 //		g.setBackground(Color.decode("#080925"));
 		gc.setAlwaysRender(true);
-		g.setBackground(Color.decode("#0D0923"));
+//		g.setBackground(Color.decode("#0D0923"));
+		g.setBackground(Color.decode("#003366"));
 		
 		Input input = gc.getInput();
 //		int mx = input.getMouseX();
@@ -132,41 +136,56 @@ public class Play extends BasicGameState {
 		
 //	    translate_x = (int)-player.getX() + gc.getWidth()/2;
 //	    translate_y = (int)-player.getY() + gc.getHeight()/2;
-//		
-//		glTranslatef(translate_x, translate_y, 0);
+		
+	    translate_x = (int)-Player.freeCamX + gc.getWidth()/2;
+	    translate_y = (int)-Player.freeCamY + gc.getHeight()/2;
+		
+		glTranslatef(translate_x, translate_y, 0);
 
 //		if(background_music.playing() == false){
 //			background_music.loop();
 //		}
+		
+		if(input.isMousePressed(0)){
+			player.setX(input.getMouseX() - translate_x);
+			player.setY(input.getMouseY() - translate_y);
+		}
 		
 		g.drawString("" + gc.getFPS(), 100, 100);
 		
 		tilemap.draw(g, gc, input);
 	    player.draw(g, gc, input, font);
 		gun.logic(g, gc, input);
-//		
-//		shop.draw(g, gc);
-	    
-	    
-//	    pistol.draw(((player.getX() + 32 ) - pistol.getWidth()), player.getY() + 8);
+
+		
+		
+		// Reset viewport
+		glTranslatef(-translate_x, -translate_y, 0);
+
+		
+		shop.draw(g, gc);
 	    
 		
-		// PISTOL - 9 PIXELS
+		Gun.wielding.icon().draw(10, 10);         
 		
-//	    guns.get(0).gunRight().draw((player.getX() + 16) + guns.get(0).OFFSET().getX(), player.getY() + guns.get(0).OFFSET().getY());
-	    
-	    
-//	    Point OFFSET_X = new Point(1, 8);
-//	    
-//		if(Player.facing_right){
-//			pistol.draw((player.getX() + 16) + OFFSET_X.getX(), player.getY() + OFFSET_X.getY());
-//			
-//			
-//		}else if(Player.facing_left){
-//	
-//			pistol.getFlippedCopy(true, false).draw((player.getX()) - OFFSET_X.getX() - pistol.getWidth(), player.getY() + OFFSET_X.getY());
-//			
-//		}
+		g.setAntiAlias(false);
+		g.setLineWidth(1);
+		
+		for(int i=0;i<Gun.wielding.magezine() + 1;i++){
+			if(i <= Gun.wielding.ammo()){
+				g.setColor(Color.white);
+			}else{
+				g.setColor(Color.darkGray);
+			}
+			Rectangle box = new Rectangle(
+					20 + Gun.wielding.icon().getWidth() + (4 * i), 
+					15, 
+					2,
+					6
+				);
+			g.fill(box);
+		}
+
 		
 	    
 		
@@ -185,9 +204,7 @@ public class Play extends BasicGameState {
 		
 		
 		
-//		// Reset viewport
-//		glTranslatef(-translate_x, -translate_y, 0);
-//		displayFPS(font, gc.getFPS());
+		
 		
 		
 		

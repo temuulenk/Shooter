@@ -1,12 +1,13 @@
 package Weapons;
-import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Point;
 
 
 public abstract class Weapons {
 	
-	public abstract Weapons get();
+	public abstract Weapons get() throws SlickException;
 	
 	public abstract Image gunRight();
 	public abstract Image gunLeft();
@@ -24,6 +25,8 @@ public abstract class Weapons {
 	public abstract float getY();
 	public abstract void setX(int i);
 	public abstract void setY(int i);
+	
+	public abstract Sound gunshot();
 	
 	public abstract int speed();
 	public abstract int reload_time();
