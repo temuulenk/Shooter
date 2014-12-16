@@ -1,6 +1,10 @@
 package Main;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
+
+import javax.swing.Timer;
 
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
@@ -18,7 +22,7 @@ public class Player {
 	
 	private TileMap tileMap;
 	
-	private float x = 90;
+	private float x = 200;
 	private float y = 470;
 	private float dx;
 	private float dy;
@@ -67,7 +71,6 @@ public class Player {
 	public static boolean dead = false;
 	public static boolean respawn = false;
 	public static boolean send_death = true;
-	public static String lastHitBy = "";
 	
 	ArrayList<Circles> circles = new ArrayList<Circles>(0);
 	
@@ -79,9 +82,6 @@ public class Player {
 	public static SpriteSheet hero_leftSS;
 	public static Animation hero_right;
 	public static Animation hero_left;
-	
-	public static SpriteSheet fallingSS;
-	public static Animation fallingA;
 	
 	public static float centerX;
 	public static float centerY;
@@ -95,6 +95,14 @@ public class Player {
 	public static float freeCamX = 200;
 	public static float freeCamY = 550;
 	
+	public static String lastHit = "";
+	public static String lastHitBy = "";
+	
+	
+	public static int deathTimer = 20;
+	public static Timer timer;
+	
+	public boolean sentDeath = false;
 	
 	
 	public Player(TileMap map) throws SlickException {
@@ -114,53 +122,43 @@ public class Player {
 		hero_leftSS = new SpriteSheet("lib/res/Player/left.png", 16, 34);
 		hero_right = new Animation(hero_rightSS, 150);
 		hero_left = new Animation(hero_leftSS, 150);
-		fallingSS = new SpriteSheet("lib/res/Player/falling.png", 16, 34);
-		fallingA = new Animation(fallingSS, 400);
 		
 		jump = new Image("lib/res/Player/left_jump.png");
 		
+		timer = new Timer(1000, new TimerListener());
 		
 	}
 	
-	// getters and setters
-	public int health(){
-		return health;
-	}
-	public int max_health(){
-		return max_health;
-	}
-	public boolean moving(){
-		return moving;
-	}
-	public void set_health(int i){
-		health = i;
+	
+	public class TimerListener implements ActionListener{
+		public void actionPerformed(ActionEvent e){
+			deathTimer --;
+			Client.send("DEATH_TIMER:" + deathTimer);
+		}
 	}
 	
+	
+	// getters and setters
+	public int health(){ return health; }
+	public int max_health(){ return max_health; }
+	public boolean moving(){ return moving; }
+	public void set_health(int i){ health = i; }
 	public void setX(int i){ x = i; }
 	public void setY(int i) { y = i; }
-	
 	public void setLeft(boolean b){ move_left = b; }
 	public void setRight(boolean b){ move_right = b; }
-	
+	public float getX(){ return (x - width/2); }
+	public float getY(){ return (y - height/2); }
+	public float centerX(){	return getX() + hero_rightSS.getSubImage(0, 0).getWidth() / 2; }
+	public float centerY() { return getY() + hero_rightSS.getSubImage(0, 0).getHeight() / 2; }
 	public void setJumping(boolean b){
 		if(!falling){
 			jumping = true;
 		}
 	}
-	public float getX(){
-		return (x - width/2);
-	}
-	public float getY(){
-		return (y - height/2);
-	}
+
 	
-	public float centerX(){
-		return getX() + hero_rightSS.getSubImage(0, 0).getWidth() / 2;
-	}
-	
-	public float centerY() {
-		return getY() + hero_rightSS.getSubImage(0, 0).getHeight() / 2;
-	}
+
 	
 	public void logic(GameContainer gc, Input input){
 		
@@ -287,9 +285,6 @@ public class Player {
 			}else{
 				moving = false;
 			}
-				
-			
-			
 			if(input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)){
 				left = false;
 				right = true;
@@ -297,7 +292,6 @@ public class Player {
 			}else{
 				setRight(false);
 			}
-			
 			if(input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)){
 				right = false;
 				right = true;
@@ -305,12 +299,10 @@ public class Player {
 			}else{
 				setLeft(false);
 			}
-			
 			if(input.isKeyPressed(Input.KEY_W) || input.isKeyPressed(Input.KEY_UP) || input.isKeyPressed(Input.KEY_SPACE)){
 				if(!usingJetpack)
 					setJumping(true);
 			}
-			
 			if((input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_UP) || input.isKeyDown(Input.KEY_SPACE)) && usingJetpack){
 //				flying = true;
 				jumping = true;
@@ -322,13 +314,31 @@ public class Player {
 				flying = false;
 			}
 		}
-		
-		
-		
-		
+	}
+	
+	
+	
+	public void respawn(){
+		deathTimer = 20;
+		health = 15;
+		timer.stop();
+		sentDeath = false;
 	}
 	
 	public void draw(Graphics g, GameContainer gc, Input input, TrueTypeFont font){
+		
+		
+		
+		if(dead){
+			if(timer.isRunning() == false){
+				timer.start();
+			}
+			if(deathTimer <= 0){
+				respawn();
+			}
+		}
+		
+		
 		
 	  	float cos = (getX() - freeCamX);
     	float sin = (getY() - freeCamY);
@@ -346,10 +356,8 @@ public class Player {
 			TileMap.mapY = getY();
 		}
 		
-		shoot_right = (input.getMouseX() - Play.translate_x) - getX() > 0;
 		
 		float pos = getX() - (input.getMouseX() - Play.translate_x);
-		
 		facing_right = (pos <= 0) ? true: false;
 		facing_left = (pos > 0) ? true: false;
 		
@@ -360,7 +368,7 @@ public class Player {
 //			Alerts.append(lastHitBy + " has killed " + Main.name);
 //			String s = lastHitBy + " has killed " + Menu.name;
 //			Client.send("DEATH:" + s);
-			send_death = false;
+//			send_death = false;
 		}
 		
 		if(respawn){
@@ -377,42 +385,29 @@ public class Player {
 			dead = false;
 		}
 		
+		
 		player_line = ""  + usingJetpack +
-			":" + flying  +
-			":" + jumping +
-			":" + moving  +
-			":" + facing_right + 
-			":" + facing_left + 
-			":" + getX()  + 
-			":" + getY()  +
-			":" + health  +
-			":" + Menu.name + 
-			":" + Gun.theta;
-		
-//		System.out.println(player_line);
-		
+				":" + flying  +
+				":" + jumping +
+				":" + moving  +
+				":" + facing_right + 
+				":" + facing_left + 
+				":" + getX()  + 
+				":" + getY()  +
+				":" + health  +
+				":" + Menu.name + 
+				":" + Gun.theta +
+				":" + Gun.tempx +
+				":" + Gun.tempy +
+				":" + Gun.wielding.CENTER().getX() + 
+				":" + Gun.wielding.CENTER().getY() + 
+				":" + Gun.wielding.name();
 		
 		
 		logic(gc, input);
 		g.setLineWidth(2f);
 		
-		
-		if(input.isKeyPressed(Input.KEY_U)){
-			usingJetpack = !usingJetpack;
-		}
-		
-		
-		for(int i=0;i<circles.size();i++){
-			if(circles.get(i).remove){
-				circles.remove(i);
-			}else{
-				circles.get(i).draw(g, gc);
-			}
-		}
-		
-		
 		if(health > 0){
-			
 			if(jumped){
 				if(facing_left){
 					jump.draw(getX(), getY());
@@ -436,48 +431,8 @@ public class Player {
 					hero_left.draw(getX(), getY() - 2);
 				}
 			}
-			
-			
-//			if(usingJetpack && flying){
-//				int green = random.nextInt(100 - 0) + 0;
-//				int size = random.nextInt(12 - 3) + 3;
-//				if(facing_right)
-//					circles.add(new Circles(getX(), getY() + 13, green, size));
-//				else
-//					circles.add(new Circles(getX() + (width - 4), getY() + 13,green, size));
-//			}
-//			
-//			
-//			
-//			if(!jumping){
-//				
-//				if((flying || falling) && facing_right && !falling){
-////					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
-//					jump.getFlippedCopy(true, false).draw(getX(), getY());
-//				}
-//				else if((flying || falling) && facing_left && !falling){
-////					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
-//					jump.draw(getX(), getY());
-//				}
-//				
-//				else if(facing_right && !moving || falling){
-//					hero_rightSS.getSubImage(1, 0).draw(getX(), getY());
-//				}
-//				else if(facing_left && !moving || falling){
-//					hero_leftSS.getSubImage(0, 0).draw(getX(), getY());
-//				}
-//				
-//				else if(facing_right && moving){
-//					hero_right.draw(getX(), getY());
-//				}
-//				else if(facing_left && moving){
-//					hero_left.draw(getX(), getY());
-//				}
-//			}
 		}
 			
-//		font.drawString(100,100, "" + dy);
-		
 		player_rect = new Rectangle(getX(), getY(), width, height);
 		
 

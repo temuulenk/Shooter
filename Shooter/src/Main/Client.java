@@ -42,7 +42,6 @@ public class Client implements Runnable {
 	    if (clientSocket != null && os != null && is != null) {
 	    	try {
 		        new Thread(new Client()).start();
-//		        os.println(Main.name);
 		        while (!closed) {
 		        	
 		        	if(Play.quit == false){
@@ -84,18 +83,17 @@ public class Client implements Runnable {
 	    		if(line.startsWith("QUIT")){
 	    			System.out.println("QUITTING");
 	    			String[] split = line.split(":");
-	    			Play.players[Integer.parseInt(split[1])] = null;
-	    			Play.names[Integer.parseInt(split[1])] = null;
-	    			break;
+	    			ClientHandler.players[Integer.parseInt(split[1])] = null;
+	    			ClientHandler.screen_name[to_int(split[1])] = null;
 	    		}
 	    		
-//	    		else if(line.startsWith("NAMES")){
-//	    			PlayState.player_names.clear();
-//	    			String[] split = line.split(":");
-//	    			for(int i=1;i<split.length;i++){
-//	    				PlayState.player_names.add(split[i]);
-//	    			}
-//	    		}
+	    		else if(line.startsWith("DEATH_TIMER")){
+	    			String[] split = line.split(":");
+	    			int value = to_int(split[3]);
+	    			int pos = to_int(split[1]);
+	    			ClientHandler.times[pos] = value;
+	    		}
+	    		
 	    		else if(line.startsWith("TILE")){
 	    			try{
 	    				System.out.println(line);
@@ -114,12 +112,14 @@ public class Client implements Runnable {
 	    		
 	    		else if(line.startsWith("bullet")){
 	    			String[] split = line.split(":");
-//	    			String bullet_str = "" + (endX + 15) + ":" + (endY - (bullet_image.getHeight())) + ":" + toX + ":" + toY;
-	    			float bx = to_float(split[3]);
-	    			float by = to_float(split[4]);
-	    			float b_toX = to_float(split[5]);
-	    			float b_toY = to_float(split[6]);
-	    			ClientHandler.addBullet(bx, by, b_toX, b_toY);
+//	    			Client.send("bullet:" + Menu.name + ":" + xSpawn + ":" + ySpawn + ":" + toX + ":" + (toY + r));
+	    			
+	    			float bx = to_float(split[4]);
+	    			float by = to_float(split[5]);
+	    			float b_toX = to_float(split[6]);
+	    			float b_toY = to_float(split[7]);
+	    			String name = split[3];
+	    			ClientHandler.addBullet(bx, by, b_toX, b_toY, name);
 	    		}
 	    		
 	    		
@@ -130,6 +130,7 @@ public class Client implements Runnable {
 //	    				added.add(split[10]);
 //	    			}
 	    			ClientHandler.players[to_int(split[0])] = line;
+//	    			ClientHandler.health[to_int(split[0])] = to_int(split[9]);
 	    		}
 
 	    	

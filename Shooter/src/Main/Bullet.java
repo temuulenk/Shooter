@@ -28,13 +28,13 @@ public class Bullet {
 	
 	
 
-	public Bullet(Image img, float posX, float posY, float toX, float toY, float velocity) {
+	public Bullet(Image img, float posX, float posY, float toX, float toY, String name) {
 		bullet = img;
-//		speed = velocity;
 		startX = posX;
 		startY = posY;
 		x = posX;
 		y = posY;
+		owner = name;
 		
 		float xDistance = (toX) - x;
 		float yDistance = y - (toY);

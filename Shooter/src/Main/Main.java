@@ -16,8 +16,8 @@ public class Main extends StateBasedGame {
 //        this.addState(new Play(playState));
         addState(new Menu(1));
         addState(new Play(2));
-        addState(new Editor(3));
-        enterState(2);
+        addState(new WorldBuilder(3));
+        enterState(1);
 
     }
 
@@ -26,7 +26,10 @@ public class Main extends StateBasedGame {
 	}
 	
 	public boolean closeRequested() {
-		Editor.Write();
+		if(Menu.enteredWorldBuilder)
+			WorldBuilder.Write();
+		if(Play.inMultiplayer == true)
+			Client.send("QUIT");
 		System.exit(0);
 		return false;
 	}
@@ -38,7 +41,7 @@ public class Main extends StateBasedGame {
 		
 		Thread main_thread = new Thread(new Window());
 		main_thread.start();
-
+		
 		
 	}
 	
@@ -51,7 +54,7 @@ class Window implements Runnable {
 	AppGameContainer app;
 	public void run() {
 		try {
-			app = new AppGameContainer(new Main("- Shooter -"));
+			app = new AppGameContainer(new Main("8Bit Shooter"));
 			app.setDisplayMode(Main.WIDTH, Main.HEIGHT, false);
 			app.setTargetFrameRate(60);
 			app.setIcon("lib/res/Misc/logo.png");

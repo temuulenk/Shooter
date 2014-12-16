@@ -14,6 +14,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
+import org.newdawn.slick.geom.Rectangle;
 
 import Weapons.Weapons;
 
@@ -74,6 +75,7 @@ public class Gun {
 	
 	public static ArrayList<Weapons> inventory = new ArrayList<Weapons>(0);
 	
+	public static float tempx, tempy;
 	
 	public class TimerListener implements ActionListener{
 		public void actionPerformed(ActionEvent e){
@@ -107,11 +109,9 @@ public class Gun {
 		
 		
 		wielding = inventory.get(0);
-		inventory.add(Shop.gun(1));
-		
 	}
 	
-	public void logic(Graphics g, GameContainer gc, Input input){
+	public void logic(Graphics g, GameContainer gc, Input input) throws SlickException{
 
 	    int dWheel = Mouse.getDWheel();
 	    if (dWheel < 0) {
@@ -138,114 +138,116 @@ public class Gun {
 		
 //		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
-		g.setColor(new Color(194, 0, 0));
-		g.setAntiAlias(true);
-		g.setLineWidth(1);
-		drawBullets(g);
 		
-		playerX = Play.player.getX();
-		playerY = Play.player.getY();
-		
-		offsetX = wielding.OFFSET().getX();
-		offsetY = wielding.OFFSET().getY();
-		
-		
-		// Gun directional handler
-		// 16 PIXELS - Width of player 
-		if(Player.facing_right){
-			float tempx = playerX + 16 + offsetX;
-			float tempy = 0;
-			if(Player.moving && 
-				(Player.hero_right.getFrame() == 2 || 
-				 Player.hero_right.getFrame() == 3 || 
-				 Player.hero_right.getFrame() == 7 || 
-				 Player.hero_right.getFrame() == 8)
-				){
-				tempy = playerY + offsetY - 2;
-			}else{
-				tempy = playerY + offsetY;
-			}
-			wielding.gunRight().draw(tempx, tempy);
+		if(Player.health > 0){
+			g.setColor(new Color(194, 0, 0));
+			g.setAntiAlias(true);
+			g.setLineWidth(1);
+			drawBullets(g, gc);
 			
-			xDistance = (mx) - tempx;
-			yDistance = tempy - (my);
-			theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
+			playerX = Play.player.getX();
+			playerY = Play.player.getY();
 			
-			wielding.gunRight().setCenterOfRotation(
-				- wielding.CENTER().getX(), 
-				wielding.CENTER().getY()
-			);
-			wielding.gunRight().setRotation(theta - 90);
-		}
-		
-		
-		
-		else if(Player.facing_left){
-			float tempx = playerX - wielding.gunLeft().getWidth() - offsetX;
-			float tempy = 0;
-			if(Player.moving && 
-				(Player.hero_left.getFrame() == 2 || 
-				 Player.hero_left.getFrame() == 3 || 
-				 Player.hero_left.getFrame() == 7 || 
-				 Player.hero_left.getFrame() == 8)
-				){
-				tempy = playerY + offsetY - 2;
-			}else{
-				tempy = playerY + offsetY;
-			}
-			wielding.gunLeft().draw(tempx, tempy);
-			
-			xDistance = (mx) - tempx;
-			yDistance = tempy - (my);
-			theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
-			
-			wielding.gunLeft().setCenterOfRotation(
-				wielding.CENTER().getX() + wielding.gunLeft().getWidth(), 
-				wielding.CENTER().getY()
-			);
-			wielding.gunLeft().setRotation(theta + 90);
+			offsetX = wielding.OFFSET().getX();
+			offsetY = wielding.OFFSET().getY();
 			
 			
-		}
-		
-
-		
-		if(allowedToShoot){
-			if(wielding.once()){
-				if(wielding.ammo() >= 0 && input.isMousePressed(0) && count > 5){
-					shot = true;
-					shoot(g, theta, mx, my);
-					count = 0;
+			// Gun directional handler
+			// 16 PIXELS - Width of player 
+			if(Player.facing_right){
+				tempx = playerX + 16 + offsetX;
+				tempy = 0;
+				if(Player.moving && 
+					(Player.hero_right.getFrame() == 2 || 
+					 Player.hero_right.getFrame() == 3 || 
+					 Player.hero_right.getFrame() == 7 || 
+					 Player.hero_right.getFrame() == 8)
+					){
+					tempy = playerY + offsetY - 2;
+				}else{
+					tempy = playerY + offsetY;
 				}
-			}else{
-				if(wielding.ammo() >= 0 && input.isMouseButtonDown(0) && count > 5){
-					shot = true;
-					shoot(g, theta, mx, my);
-					count = 0;
-				}
+				wielding.gunRight().draw(tempx, tempy);
+				
+				xDistance = (mx) - tempx;
+				yDistance = tempy - (my);
+				theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
+				
+				wielding.gunRight().setCenterOfRotation(
+					- wielding.CENTER().getX(), 
+					wielding.CENTER().getY()
+				);
+				wielding.gunRight().setRotation(theta - 90);
 			}
-			count ++;
-		}
-		
-		
-		
-		if(input.isKeyPressed(Input.KEY_R) && reloadTimer.isRunning() == false && wielding.ammo() < wielding.magezine() && !Shop.open){
-			// TODO Reload..
-			reloading = true;
-			reloadTimer.start();
-		}
-		
-		if(wielding.ammo() == wielding.magezine()) reloading = false;
-		
-		if(reloading){
+			
+			
+			else if(Player.facing_left){
+				tempx = playerX - wielding.gunLeft().getWidth() - offsetX;
+				tempy = 0;
+				if(Player.moving && 
+					(Player.hero_left.getFrame() == 2 || 
+					 Player.hero_left.getFrame() == 3 || 
+					 Player.hero_left.getFrame() == 7 || 
+					 Player.hero_left.getFrame() == 8)
+					){
+					tempy = playerY + offsetY - 2;
+				}else{
+					tempy = playerY + offsetY;
+				}
+				wielding.gunLeft().draw(tempx, tempy);
+				
+				xDistance = (mx) - tempx;
+				yDistance = tempy - (my);
+				theta = (float) Math.toDegrees(Math.atan2(xDistance, yDistance));
+				
+				wielding.gunLeft().setCenterOfRotation(
+					wielding.CENTER().getX() + wielding.gunLeft().getWidth(), 
+					wielding.CENTER().getY()
+				);
+				wielding.gunLeft().setRotation(theta + 90);
+				
+				
+			}
+			
+	
+			
+			if(allowedToShoot){
+				if(wielding.once()){
+					if(wielding.ammo() >= 0 && input.isMousePressed(0) && count > 5){
+						shot = true;
+						shoot(g, theta, mx, my);
+						count = 0;
+					}
+				}else{
+					if(wielding.ammo() >= 0 && input.isMouseButtonDown(0) && count > 5){
+						shot = true;
+						shoot(g, theta, mx, my);
+						count = 0;
+					}
+				}
+				count ++;
+			}
+			
+			
+			
+			if(input.isKeyPressed(Input.KEY_R) && reloadTimer.isRunning() == false && wielding.ammo() < wielding.magezine() && !Shop.open){
+				// TODO Reload..
+				reloading = true;
+				reloadTimer.start();
+			}
+			
+			if(wielding.ammo() == wielding.magezine()) reloading = false;
+			
 			if(reloading){
-				if(reload_timer > 1){
-					wielding.reload(1);
-					reload_timer = 0;
+				if(reloading){
+					if(reload_timer > 1){
+						wielding.reload(1);
+						reload_timer = 0;
+					}
 				}
+			}else{
+				reloadTimer.stop();
 			}
-		}else{
-			reloadTimer.stop();
 		}
 		
 		
@@ -276,11 +278,18 @@ public class Gun {
 			
 			
 			if(wielding.name().equalsIgnoreCase("shotgun")){
-				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
-				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
-				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + rand.nextInt(40) - 5, 5));
+				for(int i=0;i<3;i++){
+					int r = rand.nextInt(40) + 5;
+					bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + r, Menu.name));
+					String text = "bullet:" + Menu.name + ":" + xSpawn + ":" + ySpawn + ":" + toX + ":" + (toY + r);
+					if(Play.inMultiplayer)
+						Client.send(text);
+				}
 			}else{
-				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + re, 5));
+				int r = re;
+				bullets.add(new Bullet(bullet_image, xSpawn, ySpawn, toX, toY + r, Menu.name));
+				if(Play.inMultiplayer)
+					Client.send("bullet:" + Menu.name + ":" + xSpawn + ":" + ySpawn + ":" + toX + ":" + (toY + r));
 			}
 			
 			wielding.gunshot().play(1, .5f);
@@ -295,12 +304,34 @@ public class Gun {
 	}
 	
 	
-	public void drawBullets(Graphics g){
+	public void drawBullets(Graphics g, GameContainer gc) throws SlickException{
 		
 		for(int i=0;i<bullets.size();i++){
 			if(bullets.get(i).hit) bullets.remove(i);
-			else bullets.get(i).draw(g);
-			
+			else {
+				bullets.get(i).draw(g);
+				for(int j=0;j<ClientHandler.players.length;j++){
+					if(ClientHandler.players[j] != null){
+						Enemies e = new Enemies();
+						e.logic(g, gc, ClientHandler.players[j]);
+						Rectangle enemy_rect = new Rectangle(e.x, e.y, 24, 27);
+						
+						if(bullets.get(i).rect.intersects(enemy_rect) && e.health > 0){
+							Play.text.add(new FloatingText(e.x +  + (16 - Menu.font1.getWidth("" + bullets.get(i).damage))/2, e.y, "" + bullets.get(i).damage, Color.red));
+							if(e.health - 1 == 0){
+								//TODO add kill alert, + 100 gold text
+								System.out.println("You have slain " + e.name);
+								Shop.money += 100;
+								Play.text.add(new FloatingText(e.x + (16 - Menu.font1.getWidth("+ $100"))/2, e.y, "+ $100", Color.yellow));
+							}
+							bullets.get(i).hit = true;
+							Player.lastHit = e.name;
+						}
+						
+					}
+				}
+				
+			}
 		}
 		
 		

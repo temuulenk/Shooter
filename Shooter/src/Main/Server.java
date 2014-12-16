@@ -127,6 +127,15 @@ class clientThread extends Thread {
 						}
 					}
 					
+					else if(line.startsWith("DEATH_TIMER")){
+						for(int i=0;i<Server.count;i++){
+							if(threads[i] != null && threads[i] != this){
+								if(line != null){
+									send(i, "DEATH_TIMER:" + getPosition() + ":" + line);
+								}
+							}
+						}
+					}
 					
 					
 					else{

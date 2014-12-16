@@ -51,6 +51,9 @@ public class Shop {
 	public static Image Shotgun_icon;
 	
 	
+	public static Image special_uzi;
+	
+	
 	
 	float x;
 	float y;
@@ -63,7 +66,7 @@ public class Shop {
 	int invSelection = -1;
 	
 	
-	int money = 50;
+	public static int money = 50;
 	
 	public static boolean inShoptab = true;
 	public static boolean inBagtab;
@@ -109,6 +112,9 @@ public class Shop {
     	
     	Shotgun = new Image("lib/res/Misc/shotgun.png");
     	
+    	special_uzi = new Image("lib/res/Misc/special_uzi.png");
+    	
+    	
 		
 		x = (704 - shop.getWidth())/2;
 		y = (544 - shop.getHeight())/2;
@@ -131,7 +137,7 @@ public class Shop {
 		int my = input.getMouseY();
 		Rectangle mouse = new Rectangle(mx, my, 1, 1);
 		
-		
+		money = 1000;
 		
 		if(input.isKeyPressed(Input.KEY_P)){
 			if(open && inBagtab){
@@ -162,9 +168,9 @@ public class Shop {
 		
 		
 		if(open){
+			g.setColor(new Color(0, 0, 0, .4f));
+			g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
 			shop.draw(x, y);
-			
-			
 			
 			if(inShoptab){
 				drawBoxes(mouse, input);
@@ -193,20 +199,27 @@ public class Shop {
 				font.drawString((704 - width("Shop"))/2, y - height("S"), "Shop");
 				
 				Rectangle buyRect = new Rectangle(x + 380, y + 190, width(buyHover), height(buyHover));
-				Rectangle closeRect = new Rectangle(x + 380, y + 240, width(closeHover), height(closeHover));
 
 				if(mouse.intersects(buyRect)){
 					buyHover.draw(x + 380, y + 189);
+					if(input.isMousePressed(0) && money >= guns.get(selection).price()){
+						boolean has = false;
+						for(Weapons w: Gun.inventory){
+							if(w.equals(guns.get(selection))){
+								has = true;
+								break;
+							}
+						}
+						if(has == false){
+							Gun.inventory.add(guns.get(selection));
+							money -= guns.get(selection).price();
+						}
+					}
+		
+					
+					
 				}else{
 					buy.draw(x + 380, y + 190);
-				}
-				if(mouse.intersects(closeRect)){
-					closeHover.draw(x + 380, y + 240);
-					if(input.isMousePressed(0)){
-						open = false;
-					}
-				}else{
-					close.draw(x + 380, y + 241);
 				}
 				
 //				float invSizeY = y + (shop.getHeight() - height(platform)) - skewX;
@@ -220,13 +233,16 @@ public class Shop {
 						"$" + money, Color.decode("#00942D"));
 				
 				
-			}else if(inBagtab){
+			}
+			
+			
+			else if(inBagtab){
 				font.drawString((int)(704 - width("Bag"))/2,(int) (y - height("B")), "Bag");
 				drawInv(mouse, input);
 				
-				float invSizeY = y + (shop.getHeight() - height(platform)) - skewX;
+				float invSizeY = y + 190;
 				float invSizeX = x + skewX;
-				platform.draw(invSizeX, invSizeY);
+				platform.draw(invSizeX, y + 190);
 				
 				font.drawString(
 						(int) (invSizeX + (width(platform) - width("" + Gun.inventory.size()))/2), 
@@ -237,7 +253,15 @@ public class Shop {
 				
 			}
 			
-			
+			Rectangle closeRect = new Rectangle(x + 380, y + 240, width(closeHover), height(closeHover));
+			if(mouse.intersects(closeRect)){
+				closeHover.draw(x + 380, y + 240);
+				if(input.isMousePressed(0)){
+					open = false;
+				}
+			}else{
+				close.draw(x + 380, y + 241);
+			}
 			
 			
 			Rectangle xRect = new Rectangle(x + width(shop) - width(xHover), y, width(xHover), height(xHover));
@@ -308,12 +332,7 @@ public class Shop {
 	private float height(String text){ return font.getHeight(text); }
 	private float height(Image img){ return img.getHeight(); }
 	
-	
-	
-//	private float placementX(int pos){
-//		return x + skewX + (box_width - width("Bought"))/2 + (87 * pos);
-//	}
-	
+
 	private float placex_box(int pos){
 		return x + skewX + (width(selected) + 4) * pos;
 	}
@@ -364,19 +383,6 @@ public class Shop {
 			
 			
 		}
-		
-		
-		
-//		for(int i=0;i<guns.size();i++){
-//			guns.get(i).icon().draw(placex_box(i) + (72 - width(guns.get(i).icon()))/2, y + skewY + (40 - height(guns.get(i).icon()))/2);
-//			font.drawString(placex_box(i) + (int) (72 - width(guns.get(i).name()))/2, y + skewY - height(guns.get(i).name()), guns.get(i).name(), Color.decode("#C1C3CE"));
-//			
-//			if(money < guns.get(i).price()){
-//				font.drawString(placex_box(i) + (int) (72 - width("$" + guns.get(i).price()))/2, y + skewY + 42, "$" + guns.get(i).price(), Color.decode("#C30000"));
-//			}else{
-//				font.drawString(placex_box(i) + (int) (72 - width("$" + guns.get(i).price()))/2, y + skewY + 42, "$" + guns.get(i).price(), Color.decode("#00942D"));
-//			}
-//		}
 		
 		
 		

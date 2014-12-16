@@ -72,6 +72,8 @@ public class Menu extends BasicGameState{
 	
 	Random rand = new Random();
 	
+	public static boolean enteredWorldBuilder;
+	
 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
     	try {
@@ -80,9 +82,9 @@ public class Menu extends BasicGameState{
     		awtFont = awtFont.deriveFont(20f);
     		font = new TrueTypeFont(awtFont, false);
     		
-    		InputStream inputStream1 = ResourceLoader.getResourceAsStream("lib/res/Fonts/RA1.ttf");
+    		InputStream inputStream1 = ResourceLoader.getResourceAsStream("lib/res/Fonts/ocr.ttf");
     		Font awtFont1 = Font.createFont(Font.TRUETYPE_FONT, inputStream1);
-    		awtFont1 = awtFont1.deriveFont(20f);
+    		awtFont1 = awtFont1.deriveFont(10f);
     		font1 = new TrueTypeFont(awtFont1, false);
     		
     	} catch (Exception e) {
@@ -140,14 +142,14 @@ public class Menu extends BasicGameState{
 	
 	
 	private void selection(StateBasedGame sbg, int i){
-//		current_state = i;
 		if(options[i].equalsIgnoreCase("training")){
 			Play.inMultiplayer = false;
 			sbg.enterState(2);
 		}
 		
 		else if(options[i].equalsIgnoreCase("quit")){
-			// TODO - write to xml file
+			if(enteredWorldBuilder)
+				WorldBuilder.Write();
 			System.exit(0);
 		}else if(options[i].equalsIgnoreCase("multiplayer")){
 			Play.inMultiplayer = true;
@@ -161,7 +163,8 @@ public class Menu extends BasicGameState{
 		}else if(options[i].equalsIgnoreCase("statistics")){
 			current_state = i;
 		}else if(options[i].equalsIgnoreCase("world builder")){
-			Editor.chose_map = false;
+			enteredWorldBuilder = true;
+			WorldBuilder.selecting = true;
 			sbg.enterState(3);
 		}
 		
@@ -275,7 +278,7 @@ public class Menu extends BasicGameState{
 		font.drawString((int)center(0, 704, width(signature)), 500, signature, Color.black);
 		
 		img.draw(center(0, 704, img.getWidth()), 40);
-		write((int)center(0, 704, width("8bit Shooter")), 20, "8bit Shooter", Color.black);
+		write((int)center(0, 704, width("8bit Shooter")), 20, "8bit Shooter", Color.white);
 		
 		
 	}
